@@ -4,23 +4,26 @@ rawinput library for rust development on windows
 # Usage Example
 
 ```no_run
-extern crate rawinput;
-use rawinput::*;
-use rawinput::RawEvent::*;
+extern crate multiinput;
+extern crate time;
+
+use multiinput::*;
 fn main() {
     let mut manager = RawInputManager::new().unwrap();
-    manager.register_devices(DeviceType::All);
+    manager.register_devices(DeviceType::Joysticks);
+    manager.register_devices(DeviceType::Keyboards);
+    manager.register_devices(DeviceType::Mice);
     'outer: loop{
         if let Some(event) = manager.get_event(){
             match event{
-                KeyboardEvent(id,  KeyId::Return, State::Pressed)
-                               => println!("Keyboard Number {:?} Pressed Return", id),
-                KeyboardEvent(id,  KeyId::Escape, State::Pressed)
-                               => break 'outer,
+                RawEvent::KeyboardEvent(_,  KeyId::Escape, State::Pressed)
+                    => break 'outer,
                 _ => (),
             }
+            println!("{:?}", event);
         }
     }
+    println!("Finishing");
 }
 ```
 

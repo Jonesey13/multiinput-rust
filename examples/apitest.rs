@@ -2,23 +2,20 @@ extern crate multiinput;
 extern crate time;
 
 use multiinput::*;
-use multiinput::RawEvent::*;
-
-fn main(){
-    //print_raw_device_list(devices.clone());
+fn main() {
     let mut manager = RawInputManager::new().unwrap();
-    manager.register_devices(DeviceType::Mice);
-    manager.register_devices(DeviceType::Keyboards);
     manager.register_devices(DeviceType::Joysticks);
-
-    print_raw_device_list();
-    let start_time = time::precise_time_s();
-    let mut current_time = time::precise_time_s() - start_time;
-    while current_time < 10f64{
-        while let Some(event) = manager.get_event(){
+    manager.register_devices(DeviceType::Keyboards);
+    manager.register_devices(DeviceType::Mice);
+    'outer: loop{
+        if let Some(event) = manager.get_event(){
+            match event{
+                RawEvent::KeyboardEvent(_,  KeyId::Escape, State::Pressed)
+                    => break 'outer,
+                _ => (),
+            }
             println!("{:?}", event);
         }
-        current_time = time::precise_time_s() - start_time;
     }
     println!("Finishing");
 }
