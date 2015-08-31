@@ -5,7 +5,7 @@ use devices::*;
 use event::*;
 use mouse::*;
 use keyboard::*;
-use hidmod::*;
+use joystick::*;
 use hid::*;
 use std::collections::VecDeque;
 use std::{mem,ptr};
@@ -171,29 +171,6 @@ pub fn produce_raw_device_list() -> Devices {
     }
     device_list.unique();
     device_list
-}
-
-/// Prints a list of all available raw input devices
-pub fn print_raw_device_list () {
-    let device_list = produce_raw_device_list();
-    println!("Mice:");
-    for mouse in device_list.mice{
-        println!("{:?}", mouse.names);
-        println!("{:?}", mouse.serial);
-    }
-    println!("Keyboards:");
-    for keyboard in device_list.keyboards{
-        println!("{:?}", keyboard.names);
-        println!("{:?}", keyboard.serial);
-    }
-    println!("Hids:");
-    for joystick in device_list.joysticks{
-        println!("{:?}", joystick.names);
-        println!("{:?}", joystick.serial);
-        for caps in joystick.value_caps {
-            println!("{:?}", caps);
-        }
-    }
 }
 
 pub unsafe fn raw_handle_to_name(device_handle: HANDLE) -> String {

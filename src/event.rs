@@ -55,12 +55,26 @@ pub enum KeyId {
     Seven,
     Eight,
     Nine,
-    LeftShift,
-    RightShift,
+    Shift,
     LeftCtrl,
     RightCtrl,
     LeftAlt,
     RightAlt,
+    CapsLock,
+    Pause,
+    PageUp,
+    PageDown,
+    PrintScreen,
+    Insert,
+    End,
+    Home,
+    Delete,
+    Add,
+    Subtract,
+    Multiply,
+    Separator,
+    Decimal,
+    Divide,
 }
 
 /// Mouse Buttons
@@ -103,14 +117,24 @@ pub enum RawEvent {
 impl JoystickState {
     pub fn compare_states(&self, other_state: JoystickState, id: usize) -> Vec<RawEvent> {
         let mut output: Vec<RawEvent> = Vec::new();
-        for index in 0..self.button_states.len() {
-            if self.button_states[index] == true && other_state.button_states[index] == false {
-                output.push(RawEvent::JoystickButtonEvent(id,index,State::Released));
-            }
-            if self.button_states[index] == false && other_state.button_states[index] == true {
-                output.push(RawEvent::JoystickButtonEvent(id,index,State::Pressed));
-            }
+        for (index, (&press_state, _)) in self.button_states.iter()
+            .zip(other_state.button_states.iter()).enumerate()
+            .filter(|&(_, (&a, &b))| a != b) {
+            output.push(RawEvent::JoystickButtonEvent(
+                id,
+                index,
+                if press_state { State::Released } else { State::Pressed }));
         }
+        // for index in 0..self.button_states.len() {
+        //     if self.button_states[index] == true
+        //         && other_state.button_states[index] == false {
+        //         output.push(RawEvent::JoystickButtonEvent(id,index,State::Released));
+        //     }
+        //     if self.button_states[index] == false
+        //         && other_state.button_states[index] == true {
+        //         output.push(RawEvent::JoystickButtonEvent(id,index,State::Pressed));
+        //     }
+        // }
         if self.raw_axis_states.x != other_state.raw_axis_states.x {
             if let Some(value) = other_state.axis_states.x {
                 output.push(RawEvent::JoystickAxisEvent(id, Axis::X, value));

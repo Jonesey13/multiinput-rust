@@ -1,11 +1,11 @@
 use winapi::*;
 use event::*;
 
-// #[derive(Clone)]
-// enum KeyPos {
-//     Left,
-//     Right,
-// }
+#[derive(Clone, Debug, PartialEq, Eq)]
+enum KeyPos {
+    Left,
+    Right,
+}
 
 pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent> {
     let mut output: Vec<RawEvent> = Vec::new();
@@ -13,19 +13,34 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     let key = raw_data.VKey as i32;
     let mut key_opt: Option<KeyId> = None;
     let key_state: State;
-    //let key_pos: KeyPos;
+    let key_pos: KeyPos;
     if flags & RI_KEY_BREAK != 0 {
         key_state = State::Released;
     }
     else {
         key_state = State::Pressed;
     }
-    // if flags & RI_KEY_E0 != 0 {
-    //     key_pos = KeyPos::Left;
-    // }
-    // else {
-    //     key_pos = KeyPos::Right;
-    // }
+    if flags & RI_KEY_E0 == 0 {
+        key_pos = KeyPos::Left;
+    }
+    else {
+        key_pos = KeyPos::Right;
+    }
+    if key == VK_SHIFT {
+        key_opt = Some(KeyId::Shift);
+    }
+    if key == VK_CONTROL && key_pos == KeyPos::Left {
+        key_opt = Some(KeyId::LeftCtrl);
+    }
+    if key == VK_CONTROL && key_pos == KeyPos::Right {
+        key_opt = Some(KeyId::RightCtrl);
+    }
+    if key == VK_MENU && key_pos == KeyPos::Left {
+        key_opt = Some(KeyId::LeftAlt);
+    }
+    if key == VK_MENU && key_pos == KeyPos::Right {
+        key_opt = Some(KeyId::RightAlt);
+    }
     if key == VK_ESCAPE {
         key_opt = Some(KeyId::Escape);
     }
@@ -49,12 +64,6 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     }
     if key == VK_SPACE {
         key_opt = Some(KeyId::Space);
-    }
-    if key == VK_LSHIFT {
-        key_opt = Some(KeyId::LeftShift);
-    }
-    if key == VK_RSHIFT {
-        key_opt = Some(KeyId::RightShift);
     }
     if key == VK_LCONTROL {
         key_opt = Some(KeyId::LeftCtrl);
@@ -176,7 +185,51 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     if key == 0x5A {
         key_opt = Some(KeyId::Z);
     }
-
+    if key == VK_CAPITAL {
+        key_opt = Some(KeyId::CapsLock);
+    }
+    if key == VK_PAUSE {
+        key_opt = Some(KeyId::Pause);
+    }
+    if key == VK_NEXT {
+        key_opt = Some(KeyId::PageUp);
+    }
+    if key == VK_PRIOR {
+        key_opt = Some(KeyId::PageDown);
+    }
+    if key == VK_SNAPSHOT {
+        key_opt = Some(KeyId::PrintScreen);
+    }
+    if key == VK_INSERT {
+        key_opt = Some(KeyId::Insert);
+    }
+    if key == VK_END {
+        key_opt = Some(KeyId::End);
+    }
+    if key == VK_HOME {
+        key_opt = Some(KeyId::Home);
+    }
+    if key == VK_DELETE {
+        key_opt = Some(KeyId::Delete);
+    }
+    if key == VK_ADD {
+        key_opt = Some(KeyId::Add);
+    }
+    if key == VK_SUBTRACT {
+        key_opt = Some(KeyId::Subtract);
+    }
+    if key == VK_MULTIPLY {
+        key_opt = Some(KeyId::Multiply);
+    }
+    if key == VK_DIVIDE {
+        key_opt = Some(KeyId::Divide);
+    }
+    if key == VK_SEPARATOR {
+        key_opt = Some(KeyId::Separator);
+    }
+    if key == VK_DECIMAL {
+        key_opt = Some(KeyId::Decimal);
+    }
     if let Some(key_id) = key_opt {
         output.push(RawEvent::KeyboardEvent(id, key_id, key_state));
         }

@@ -23,7 +23,8 @@ enum Command {
     Register(DeviceType),
     GetEvent,
     GetJoystickState(usize),
-    Finish
+    Finish,
+    PrintDeviceList,
 }
 
 /// Types of Raw Input Device
@@ -64,6 +65,8 @@ impl RawInputManager {
                     Command::Finish => {exit = true;},
                     Command::GetJoystickState(id) =>
                         tx_joy.send(get_joystick_state(&devices, id)).unwrap(),
+                    Command::PrintDeviceList =>
+                        print_raw_device_list(&devices),
                 };
             };
         });
@@ -91,6 +94,11 @@ impl RawInputManager {
     pub fn get_joystick_state(&mut self, id: usize) -> Option<JoystickState> {
         self.sender.send(Command::GetJoystickState(id)).unwrap();
         self.joystick_receiver.recv().unwrap()
+    }
+
+    /// Print List of Potential Input Devices
+    pub fn print_device_list(&mut self) {
+        self.sender.send(Command::PrintDeviceList).unwrap();
     }
 }
 
@@ -192,4 +200,26 @@ fn register_devices( hwnd: HWND, reg_type: DeviceType,
         }
     }
     Ok(produce_raw_device_list())
+}
+
+/// Prints a list of all available raw input devices
+fn print_raw_device_list (devices: &Devices) {;
+    println!("Mice:");
+    for mouse in devices.mice.clone() {
+        println!("{:?}", mouse.names);
+        println!("{:?}", mouse.serial);
+    }
+    println!("Keyboards:");
+    for keyboard in devices.keyboards.clone() {
+        println!("{:?}", keyboard.names);
+        println!("{:?}", keyboard.serial);
+    }
+    println!("Hids:");
+    for joystick in devices.joysticks.clone() {
+        println!("{:?}", joystick.names);
+        println!("{:?}", joystick.serial);
+        for caps in joystick.value_caps {
+            println!("{:?}", caps);
+        }
+    }
 }

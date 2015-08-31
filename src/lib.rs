@@ -26,10 +26,7 @@ fn main() {
     println!("Finishing");
 }
 ```
-
 */
-
-
 
 extern crate libc;
 extern crate winapi;
@@ -39,12 +36,11 @@ extern crate hid;
 
 mod mouse;
 pub mod event;
-mod hidmod;
+mod joystick;
 mod rawinput;
 mod keyboard;
 mod devices;
 pub mod manager;
 
-pub use rawinput::*;
 pub use event::*;
 pub use manager::*;
