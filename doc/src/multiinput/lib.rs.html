@@ -86,10 +86,6 @@
 <span id="44">44</span>
 <span id="45">45</span>
 <span id="46">46</span>
-<span id="47">47</span>
-<span id="48">48</span>
-<span id="49">49</span>
-<span id="50">50</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/*!
 rawinput library for rust development on windows
@@ -119,10 +115,7 @@ fn main() {
     println!(&quot;Finishing&quot;);
 }
 ```
-
 */</span>
-
-
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>winapi</span>;
@@ -132,13 +125,12 @@ fn main() {
 
 <span class='kw'>mod</span> <span class='ident'>mouse</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>event</span>;
-<span class='kw'>mod</span> <span class='ident'>hidmod</span>;
+<span class='kw'>mod</span> <span class='ident'>joystick</span>;
 <span class='kw'>mod</span> <span class='ident'>rawinput</span>;
 <span class='kw'>mod</span> <span class='ident'>keyboard</span>;
 <span class='kw'>mod</span> <span class='ident'>devices</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>manager</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>rawinput</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>event</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>manager</span>::<span class='op'>*</span>;
 </pre>
