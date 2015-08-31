@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_device_info",""],["get_event",""],["get_joystick_state",""],["get_serial_number",""],["print_raw_device_list","Prints a list of all available raw input devices"],["produce_raw_device_list","Produces a Device struct containing ID's to all available raw input Devices"],["raw_handle_to_name",""],["raw_name_to_hid",""]]});
