@@ -13,3 +13,5 @@ hid-sys = "*"
 [dev-dependencies]
 time = "*"
 glium = "*"
+nalgebra = "*"
+num = "*"

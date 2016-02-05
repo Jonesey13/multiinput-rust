@@ -2,14 +2,14 @@ use devices::*;
 
 
 /// State of a Key or Button
-#[derive(Clone, Debug)]
+#[derive(Eq, PartialEq, Clone, Debug)]
 pub enum State {
     Pressed,
     Released,
 }
 
 /// Key Identifier
-#[derive(Clone, Debug)]
+#[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum KeyId {
     Escape,
     Return,
@@ -78,7 +78,7 @@ pub enum KeyId {
 }
 
 /// Mouse Buttons
-#[derive(Clone, Debug)]
+#[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum MouseButton {
     Left,
     Right,

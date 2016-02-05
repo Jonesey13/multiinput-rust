@@ -126,7 +126,10 @@ pub fn produce_raw_device_list() -> Devices {
             let device_handle = device.hDevice;
             let device_type = device.dwType;
             let name = raw_handle_to_name(device_handle);
-            let hid_handle = raw_name_to_hid(name.clone());
+            let hid_handle = match raw_name_to_hid(name.clone()) {
+                Ok(handle) => handle,
+                Err(_) => continue,
+            };
             let serial = get_serial_number(hid_handle);
             let device_info_option = get_device_info(device_handle, name, serial);
             match device_info_option {
@@ -190,7 +193,7 @@ pub unsafe fn raw_handle_to_name(device_handle: HANDLE) -> String {
     }
 }
 
-pub unsafe fn raw_name_to_hid(name: String) -> HANDLE {
+pub unsafe fn raw_name_to_hid(name: String) -> Result<HANDLE, String> {
     let os_name: &OsStr = name.as_ref();
     let mut classname = os_name.encode_wide().chain(Some(0).into_iter())
         .collect::<Vec<_>>();
@@ -201,8 +204,12 @@ pub unsafe fn raw_name_to_hid(name: String) -> HANDLE {
                                  OPEN_EXISTING,
                                  0,
                                  ptr::null_mut());
-    assert!( hid_handle != INVALID_HANDLE_VALUE);
-    hid_handle
+    if hid_handle != INVALID_HANDLE_VALUE {
+        return Ok(hid_handle);
+    }
+    else {
+        return Err("Could not get the HID handle of device ".to_string() + &name);
+    }
 }
 
 pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<String>
@@ -257,7 +264,7 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
                 garbage_vec(caps_length as usize);
 
             assert!(
-                HidP_GetButtonCaps(HIDP_REPORT_TYPE::HidP_Input,
+                HidP_GetButtonCaps(HidP_Input,
                                    p_button_caps.as_mut_ptr() as PHIDP_BUTTON_CAPS,
                                    &mut caps_length,
                                    preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
@@ -268,7 +275,7 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
                 garbage_vec(caps_length as usize);
 
             assert!(
-                HidP_GetValueCaps(HIDP_REPORT_TYPE::HidP_Input,
+                HidP_GetValueCaps(HidP_Input,
                                   p_value_caps.as_mut_ptr() as PHIDP_VALUE_CAPS,
                                   &mut caps_length,
                                   preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)

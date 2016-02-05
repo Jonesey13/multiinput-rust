@@ -61,17 +61,17 @@ impl<'a> Handler<'a>{
         draw_param.blending_function = Some( BlendingFunction::Addition{source: LinearBlendingFactor::SourceAlpha,
                                                                         destination:  LinearBlendingFactor::OneMinusSourceAlpha});
 
-        let devices = produce_raw_device_list();
-        let total_mice = devices.mice.len();
+        let mut input_manager = RawInputManager::new().unwrap();
+        input_manager.register_devices(DeviceType::Mice);
+        input_manager.register_devices(DeviceType::Keyboards);
+        input_manager.register_devices(DeviceType::Joysticks);
+        let total_mice = input_manager.get_device_stats().number_of_mice;
         let mut vertices: Vec<Part> = Vec::new();
         for _ in 0..(total_mice){
             vertices.push(Part{pos:[0.0,0.0], color: [1.0,1.0,1.0,1.0]});
         }
         let players = Players{players: vertices};
-        let mut input_manager = RawInputManager::new().unwrap();
-        input_manager.register_devices(DeviceType::Mice);
-        input_manager.register_devices(DeviceType::Keyboards);
-        input_manager.register_devices(DeviceType::Joysticks);
+
 
 
         Handler{

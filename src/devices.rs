@@ -176,9 +176,6 @@ impl JoystickState {
             }
         }
     }
-
-
-
 }
 
 #[derive(Clone, Debug)]

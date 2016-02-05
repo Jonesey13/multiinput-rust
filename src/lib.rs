@@ -5,7 +5,6 @@ rawinput library for rust development on windows
 
 ```no_run
 extern crate multiinput;
-extern crate time;
 
 use multiinput::*;
 fn main() {

@@ -25,6 +25,7 @@ enum Command {
     GetJoystickState(usize),
     Finish,
     PrintDeviceList,
+    GetDeviceStats,
 }
 
 /// Types of Raw Input Device
@@ -35,12 +36,20 @@ pub enum DeviceType {
     Joysticks,
 }
 
+#[derive(Default)]
+pub struct DeviceStats {
+    pub number_of_mice: usize,
+    pub number_of_keyboards: usize,
+    pub number_of_joysticks: usize,
+}
+
 /// Manages Raw Input Processing
 pub struct RawInputManager {
     joiner: Option<JoinHandle<()>>,
     sender: Sender<Command>,
     receiver: Receiver<Option<RawEvent>>,
     joystick_receiver: Receiver<Option<JoystickState>>,
+    device_stats_receiver: Receiver<DeviceStats>,
 }
 
 impl RawInputManager {
@@ -49,6 +58,7 @@ impl RawInputManager {
         let (tx, rx) = channel();
         let (tx2, rx2) = channel();
         let (tx_joy, rx_joy) = channel();
+        let (tx_stats, rx_stats) = channel();
 
         let joiner = thread::spawn(move || {
             let hwnd = setup_message_window();
@@ -67,6 +77,8 @@ impl RawInputManager {
                         tx_joy.send(get_joystick_state(&devices, id)).unwrap(),
                     Command::PrintDeviceList =>
                         print_raw_device_list(&devices),
+                    Command::GetDeviceStats =>
+                        tx_stats.send(get_device_stats(&devices)).unwrap(),
                 };
             };
         });
@@ -75,6 +87,7 @@ impl RawInputManager {
             sender: tx,
             receiver: rx2,
             joystick_receiver: rx_joy,
+            device_stats_receiver: rx_stats,
         })
     }
 
@@ -90,15 +103,21 @@ impl RawInputManager {
         self.receiver.recv().unwrap()
     }
 
-    /// Get Event from the Input Manager
+    /// Get Joystick State from the Input Manager
     pub fn get_joystick_state(&mut self, id: usize) -> Option<JoystickState> {
         self.sender.send(Command::GetJoystickState(id)).unwrap();
         self.joystick_receiver.recv().unwrap()
     }
 
     /// Print List of Potential Input Devices
-    pub fn print_device_list(&mut self) {
+    pub fn print_device_list(& self) {
         self.sender.send(Command::PrintDeviceList).unwrap();
+    }
+
+    /// Get Device Stats (number of connected devices)
+    pub fn get_device_stats(&self) -> DeviceStats{
+        self.sender.send(Command::GetDeviceStats).unwrap();
+        self.device_stats_receiver.recv().unwrap()
     }
 }
 
@@ -195,7 +214,7 @@ fn register_devices( hwnd: HWND, reg_type: DeviceType,
         if RegisterRawInputDevices(
             rid_vec.as_ptr(), rid_vec.len() as UINT,
             mem::size_of::<RAWINPUTDEVICE>() as UINT,
-        ) ==0 {
+        ) == 0 {
 	    return Err("Registration of Controller Failed");
         }
     }
@@ -221,5 +240,13 @@ fn print_raw_device_list (devices: &Devices) {;
         for caps in joystick.value_caps {
             println!("{:?}", caps);
         }
+    }
+}
+
+fn get_device_stats(devices: &Devices) -> DeviceStats {
+    DeviceStats {
+        number_of_mice: devices.mice.len(),
+        number_of_keyboards: devices.keyboards.len(),
+        number_of_joysticks: devices.joysticks.len(),
     }
 }

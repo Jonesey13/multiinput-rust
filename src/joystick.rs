@@ -23,7 +23,7 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
         let mut number_of_presses: ULONG = number_of_buttons;
 
 	assert!(
-            HidP_GetUsages(HIDP_REPORT_TYPE::HidP_Input,
+            HidP_GetUsages(HidP_Input,
                            button_caps.UsagePage,
                            0,
                            usage.as_mut_ptr(),
@@ -54,7 +54,7 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
 
 	    assert!(
                 HidP_GetUsageValue(
-                    HIDP_REPORT_TYPE::HidP_Input,
+                    HidP_Input,
                     value_caps.UsagePage,
                     0,
                     usage_index,
