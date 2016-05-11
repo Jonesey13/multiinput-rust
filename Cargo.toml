@@ -1,17 +1,20 @@
 [package]
-name = "multiinput"
+name = "multi-input"
 version = "0.0.1"
-authors = ["Jonesey13 <adj27@cam.ac.uk>"]
+authors = ["Jonesey13 <alexander.jones@softwire.com>"]
+description = """
+A pure rust gamepad/mouse/keyboard input library based off of rawinput for the windows platform
+"""
+documentation = "http://jonesey13.github.io/multiinput-rust/doc/multiinput/index.html"
+homepage = "https://github.com/Jonesey13/multiinput-rust"
+repository = "https://github.com/Jonesey13/multiinput-rust"
+readme = "README.md"
+license = "MIT"
+keywords = ["keyboard", "mouse", "gamepad", "hid"]
 
 [dependencies]
-libc = "*"
-winapi = "*"
-kernel32-sys = "*"
-user32-sys = "*"
-hid-sys = "*"
-
-[dev-dependencies]
-time = "*"
-glium = "*"
-nalgebra = "*"
-num = "*"
+libc = "0.2.11"
+winapi = "0.2.6"
+kernel32-sys = "0.2.2"
+user32-sys = "0.1.2"
+hid-sys = "0.2.0"

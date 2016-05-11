@@ -1,5 +1,4 @@
 extern crate multiinput;
-extern crate time;
 
 use multiinput::*;
 fn main() {

@@ -252,7 +252,7 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
             assert!(
                 GetRawInputDeviceInfoW(handle, RIDI_PREPARSEDDATA,
                                        preparsed_data.as_mut_ptr()
-                                       as PHIDP_PREPARSED_DATA,
+                                       as LPVOID,
                                        &mut preparsed_data_size) as i32 >= 0);
             let mut caps: HIDP_CAPS = mem::uninitialized();
             assert!(HidP_GetCaps(preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
