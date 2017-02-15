@@ -102,7 +102,7 @@ pub fn get_joystick_state(devices: &Devices, id: usize) -> Option<JoystickState>
 pub fn produce_raw_device_list() -> Devices {
     let mut device_list = Devices::new();
     unsafe {
-        let mut buffer: [u8; 10000] = mem::uninitialized();
+        let mut buffer: [RAWINPUTDEVICELIST; 1000] = mem::uninitialized();
         let mut num_devices: UINT = 0;
         let device_list_size =  mem::size_of::<RAWINPUTDEVICELIST>();
         let mut result = GetRawInputDeviceList(ptr::null_mut(),
@@ -111,17 +111,17 @@ pub fn produce_raw_device_list() -> Devices {
         if result == -1i32 as UINT{
             panic!("Failed to Get Raw Device List!");
         }
-        result = GetRawInputDeviceList(buffer.as_mut_ptr() as *mut RAWINPUTDEVICELIST,
+        result = GetRawInputDeviceList(buffer.as_mut_ptr() as PRAWINPUTDEVICELIST,
                                        &mut num_devices,
-                                       mem::size_of::<RAWINPUTDEVICELIST>() as UINT);
+                                       device_list_size as UINT);
         if result == -1i32 as UINT{
             panic!("Failed to Get Raw Device List Again!");
         }
 
         for pos in 0..result as usize{
             let device_ptr =
-                (&mut buffer[pos * device_list_size..(pos+1) * device_list_size]
-                 ).as_mut_ptr() as *const RAWINPUTDEVICELIST;
+                (&mut buffer[pos ..(pos+1)]
+                 ).as_mut_ptr() as PRAWINPUTDEVICELIST;
             let device = *device_ptr;
             let device_handle = device.hDevice;
             let device_type = device.dwType;
