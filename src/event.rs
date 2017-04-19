@@ -87,7 +87,7 @@ pub enum MouseButton {
     Button5,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum Axis {
     X,
     Y,
