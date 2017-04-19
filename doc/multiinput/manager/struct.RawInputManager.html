@@ -9,7 +9,10 @@
 
     <title>multiinput::manager::RawInputManager - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -24,91 +27,103 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='../index.html'>multiinput</a>::<wbr><a href='index.html'>manager</a></p><script>window.sidebarCurrent = {name: 'RawInputManager', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>multiinput</a>::<wbr><a href='index.html'>manager</a>::<wbr><a class='struct' href=''>RawInputManager</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-7751' class='srclink' href='../../src/multiinput/manager.rs.html#39-44' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct RawInputManager {
-    // some fields omitted
-}</pre><div class='docblock'><p>Manages Raw Input Processing</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../multiinput/manager/struct.RawInputManager.html' title='multiinput::manager::RawInputManager'>RawInputManager</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../multiinput/manager/struct.RawInputManager.html' title='multiinput::manager::RawInputManager'>RawInputManager</a>, &amp;'static <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</code></h4>
-<h4 id='method.register_devices' class='method'><code>fn <a href='#method.register_devices' class='fnname'>register_devices</a>(&amp;mut self, device_type: <a class='enum' href='../../multiinput/manager/enum.DeviceType.html' title='multiinput::manager::DeviceType'>DeviceType</a>)</code></h4>
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>multiinput</a>::<wbr><a href='index.html'>manager</a>::<wbr><a class="struct" href=''>RawInputManager</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../../src/multiinput/manager.rs.html#60-66' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct RawInputManager { /* fields omitted */ }</pre><div class='docblock'><p>Manages Raw Input Processing</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../../multiinput/manager/struct.RawInputManager.html" title="struct multiinput::manager::RawInputManager">RawInputManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/multiinput/manager.rs.html#68-135' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="../../multiinput/manager/struct.RawInputManager.html" title="struct multiinput::manager::RawInputManager">RawInputManager</a>, &amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>&gt;</code></span></h4>
+<h4 id='method.register_devices' class="method"><span id='register_devices.v' class='invisible'><code>fn <a href='#method.register_devices' class='fnname'>register_devices</a>(&amp;mut self, device_type: <a class="enum" href="../../multiinput/manager/enum.DeviceType.html" title="enum multiinput::manager::DeviceType">DeviceType</a>)</code></span></h4>
 <div class='docblock'><p>Allows Raw Input devices of type device_type to be received from the Input Manager</p>
-</div><h4 id='method.get_event' class='method'><code>fn <a href='#method.get_event' class='fnname'>get_event</a>(&amp;mut self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../multiinput/event/enum.RawEvent.html' title='multiinput::event::RawEvent'>RawEvent</a>&gt;</code></h4>
+</div><h4 id='method.get_event' class="method"><span id='get_event.v' class='invisible'><code>fn <a href='#method.get_event' class='fnname'>get_event</a>(&amp;mut self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="../../multiinput/event/enum.RawEvent.html" title="enum multiinput::event::RawEvent">RawEvent</a>&gt;</code></span></h4>
 <div class='docblock'><p>Get Event from the Input Manager</p>
-</div><h4 id='method.get_joystick_state' class='method'><code>fn <a href='#method.get_joystick_state' class='fnname'>get_joystick_state</a>(&amp;mut self, id: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;JoystickState&gt;</code></h4>
-<div class='docblock'><p>Get Event from the Input Manager</p>
-</div><h4 id='method.print_device_list' class='method'><code>fn <a href='#method.print_device_list' class='fnname'>print_device_list</a>(&amp;mut self)</code></h4>
+</div><h4 id='method.get_joystick_state' class="method"><span id='get_joystick_state.v' class='invisible'><code>fn <a href='#method.get_joystick_state' class='fnname'>get_joystick_state</a>(&amp;mut self, id: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;JoystickState&gt;</code></span></h4>
+<div class='docblock'><p>Get Joystick State from the Input Manager</p>
+</div><h4 id='method.print_device_list' class="method"><span id='print_device_list.v' class='invisible'><code>fn <a href='#method.print_device_list' class='fnname'>print_device_list</a>(&amp;self)</code></span></h4>
 <div class='docblock'><p>Print List of Potential Input Devices</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../multiinput/manager/struct.RawInputManager.html' title='multiinput::manager::RawInputManager'>RawInputManager</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#method.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div><h4 id='method.get_device_stats' class="method"><span id='get_device_stats.v' class='invisible'><code>fn <a href='#method.get_device_stats' class='fnname'>get_device_stats</a>(&amp;self) -&gt; <a class="struct" href="../../multiinput/manager/struct.DeviceStats.html" title="struct multiinput::manager::DeviceStats">DeviceStats</a></code></span></h4>
+<div class='docblock'><p>Get Device Stats (number of connected devices)</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html" title="trait core::ops::Drop">Drop</a> for <a class="struct" href="../../multiinput/manager/struct.RawInputManager.html" title="struct multiinput::manager::RawInputManager">RawInputManager</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/multiinput/manager.rs.html#137-142' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class="method"><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
     <script>
         window.rootPath = "../../";
         window.currentCrate = "multiinput";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
