@@ -9,7 +9,7 @@ extern crate multiinput;
 use multiinput::*;
 fn main() {
     let mut manager = RawInputManager::new().unwrap();
-    manager.register_devices(DeviceType::Joysticks);
+    manager.register_devices(DeviceType::Joysticks(XInputInclude::True);
     manager.register_devices(DeviceType::Keyboards);
     manager.register_devices(DeviceType::Mice);
     'outer: loop{
@@ -40,6 +40,7 @@ mod rawinput;
 mod keyboard;
 mod devices;
 pub mod manager;
+mod registrar;
 
 pub use event::*;
 pub use manager::*;

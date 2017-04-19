@@ -28,6 +28,7 @@ pub struct JoystickInfo {
     pub value_caps: Vec<HIDP_VALUE_CAPS>,
     pub preparsed_data: Vec<u8>,
     pub state: JoystickState,
+    pub is_360_controller: bool
 }
 
 #[derive(Clone)]
@@ -45,7 +46,6 @@ pub struct Devices{
     pub joysticks: Vec<JoystickInfo>,
     pub device_map: HashMap<HANDLE, usize>,
 }
-
 
 impl Devices{
     pub fn new() -> Devices {

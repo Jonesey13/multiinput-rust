@@ -4,6 +4,7 @@ use kernel32::*;
 use event::*;
 use devices::*;
 use rawinput::*;
+use registrar;
 
 use std::ptr;
 use std::mem;
@@ -29,11 +30,23 @@ enum Command {
 }
 
 /// Types of Raw Input Device
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone)] 
 pub enum DeviceType {
     Mice,
     Keyboards,
-    Joysticks,
+    Joysticks(XInputInclude),
+}
+
+/// Denotes if Xbox360 controllers should be used
+/// Please Note: Rawinput support for official Xbox360 controllers
+/// is very limited (triggers share same axis, no support for
+/// rumble or the central X button)
+/// Please see https://en.wikipedia.org/wiki/DirectInput#Xbox_360_Controller_support
+/// for more details
+#[derive(PartialEq, Eq, Clone)]
+pub enum XInputInclude {
+    True,
+    False
 }
 
 #[derive(Default)]
@@ -53,7 +66,6 @@ pub struct RawInputManager {
 }
 
 impl RawInputManager {
-
     pub fn new() -> Result<RawInputManager, &'static str> {
         let (tx, rx) = channel();
         let (tx2, rx2) = channel();
@@ -65,10 +77,11 @@ impl RawInputManager {
             let mut event_queue = VecDeque::new();
             let mut devices = Devices::new();
             let mut exit = false;
+            let mut registrar = registrar::RawInputRegistrar::new();
             while !exit {
                 match  rx.recv().unwrap() {
                     Command::Register(thing) =>
-                    {devices = register_devices(hwnd, thing).unwrap();
+                    {devices = registrar.register_devices(hwnd, thing).unwrap();
                      tx2.send(None).unwrap();},
                     Command::GetEvent =>
                     tx2.send(get_event(&mut event_queue, &mut devices)).unwrap(),
@@ -128,8 +141,6 @@ impl Drop for RawInputManager {
     }
 }
 
-
-
 fn setup_message_window() -> HWND{
     let hwnd: HWND;
     unsafe{
@@ -179,48 +190,6 @@ fn setup_message_window() -> HWND{
     hwnd
 }
 
-
-fn register_devices( hwnd: HWND, reg_type: DeviceType,
-                         ) -> Result<Devices, &'static str> {
-    let mut rid_vec: Vec<RAWINPUTDEVICE> = Vec::new();
-    if reg_type == DeviceType::Mice {
-        let rid = RAWINPUTDEVICE {
-	    usUsagePage: 1,
-	    usUsage: 2,	// Mice
-	    dwFlags: RIDEV_INPUTSINK,
-	    hwndTarget: hwnd,
-        };
-        rid_vec.push(rid);
-    }
-    if reg_type == DeviceType::Joysticks {
-        let rid = RAWINPUTDEVICE {
-	    usUsagePage: 1,
-	    usUsage: 4,	// Joysticks
-	    dwFlags: RIDEV_INPUTSINK,
-	    hwndTarget: hwnd,
-        };
-        rid_vec.push(rid);
-    }
-    if reg_type == DeviceType::Keyboards {
-        let rid = RAWINPUTDEVICE {
-	    usUsagePage: 1,
-	    usUsage: 6,	// Keyboards
-	    dwFlags: RIDEV_INPUTSINK,
-	    hwndTarget: hwnd,
-        };
-        rid_vec.push(rid);
-    }
-    unsafe{
-        if RegisterRawInputDevices(
-            rid_vec.as_ptr(), rid_vec.len() as UINT,
-            mem::size_of::<RAWINPUTDEVICE>() as UINT,
-        ) == 0 {
-	    return Err("Registration of Controller Failed");
-        }
-    }
-    Ok(produce_raw_device_list())
-}
-
 /// Prints a list of all available raw input devices
 fn print_raw_device_list (devices: &Devices) {;
     println!("Mice:");
@@ -237,7 +206,11 @@ fn print_raw_device_list (devices: &Devices) {;
     for joystick in devices.joysticks.clone() {
         println!("{:?}", joystick.names);
         println!("{:?}", joystick.serial);
+        println!("{:?}", joystick.caps);
         for caps in joystick.value_caps {
+            println!("{:?}", caps);
+        }
+        for caps in joystick.button_caps {
             println!("{:?}", caps);
         }
     }

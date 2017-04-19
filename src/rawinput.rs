@@ -56,7 +56,6 @@ fn read_input_buffer(event_queue: &mut VecDeque<RawEvent>, devices: &mut Devices
 
         let mut array_ptr = array_alloc.as_mut_ptr();
 
-
         for _ in 0..numberofelements as u32 {
             let header = (*(array_ptr as *mut RAWINPUT)).header;
             let raw_input = *(array_ptr as *mut RAWINPUT);
@@ -99,7 +98,7 @@ pub fn get_joystick_state(devices: &Devices, id: usize) -> Option<JoystickState>
 }
 
 /// Produces a Device struct containing ID's to all available raw input Devices
-pub fn produce_raw_device_list() -> Devices {
+pub fn produce_raw_device_list(incl_360_devices: bool) -> Devices {
     let mut device_list = Devices::new();
     unsafe {
         let mut buffer: [RAWINPUTDEVICELIST; 1000] = mem::uninitialized();
@@ -160,6 +159,9 @@ pub fn produce_raw_device_list() -> Devices {
                 },
                 RIM_TYPEHID => {
                     if let DeviceInfo::Joystick(info) = device_info {
+                        if info.is_360_controller && !incl_360_devices {
+                            continue;
+                        }
                         device_list.device_map.insert(device_handle,
                                                       device_list.joysticks.len());
                         device_list.joysticks.push(info);
@@ -240,7 +242,10 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
                              info: raw_info}
                 )),
         RIM_TYPEHID => {
-            if raw_info.hid().usUsagePage != 0x01 || raw_info.hid().usUsage != 0x04 {
+            if raw_info.hid().usUsagePage != 0x01
+                || !(
+                    raw_info.hid().usUsage == 0x04
+                    || raw_info.hid().usUsage == 0x05 ) {
                 return None;
             }
             let mut preparsed_data_size: UINT = 1024;
@@ -281,16 +286,20 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
                                   preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
                     == HIDP_STATUS_SUCCESS);
 
+            let is_360_controller = name.find("IG_") != None;
+
             Some(DeviceInfo::Joystick(
-                JoystickInfo{names: vec!(name),
-                             handles: vec![handle],
-                             serial: serial,
-                             info: raw_info,
-                             caps: caps,
-                             button_caps: p_button_caps.clone(),
-                             value_caps: p_value_caps.clone(),
-                             preparsed_data: preparsed_data,
-                             state: JoystickState::new(p_button_caps, p_value_caps)}))
+                JoystickInfo{
+                    names: vec!(name),
+                    handles: vec![handle],
+                    serial: serial,
+                    info: raw_info,
+                    caps: caps,
+                    button_caps: p_button_caps.clone(),
+                    value_caps: p_value_caps.clone(),
+                    preparsed_data: preparsed_data,
+                    state: JoystickState::new(p_button_caps, p_value_caps),
+                    is_360_controller: is_360_controller,}))
         },
         _ => panic!("Unreachable!"),
     }
