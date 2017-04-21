@@ -224,7 +224,7 @@ impl RawAxes {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum HatSwitch {
     Center,
     Up,
