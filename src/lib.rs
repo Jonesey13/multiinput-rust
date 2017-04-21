@@ -38,9 +38,10 @@ pub mod event;
 mod joystick;
 mod rawinput;
 mod keyboard;
-mod devices;
+pub mod devices;
 pub mod manager;
 mod registrar;
 
 pub use event::*;
 pub use manager::*;
+pub use devices::*;

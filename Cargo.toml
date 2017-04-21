@@ -1,6 +1,6 @@
 [package]
 name = "multiinput"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["Jonesey13 <alexander.jones@softwire.com>"]
 description = """
 A pure rust gamepad/mouse/keyboard input library based off of rawinput for the windows platform
