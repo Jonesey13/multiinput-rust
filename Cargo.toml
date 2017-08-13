@@ -1,7 +1,7 @@
 [package]
 name = "multiinput"
-version = "0.0.6"
-authors = ["Jonesey13 <alexander.jones@softwire.com>"]
+version = "0.0.7"
+authors = ["Alex Jones <alexander.jones@softwire.com>"]
 description = """
 A pure rust gamepad/mouse/keyboard input library based off of rawinput for the windows platform
 """
@@ -14,7 +14,7 @@ keywords = ["keyboard", "mouse", "gamepad", "hid"]
 
 [dependencies]
 libc = "0.2.11"
-winapi = "0.2.6"
+winapi = "0.2.0"
 kernel32-sys = "0.2.2"
-user32-sys = "0.1.2"
+user32-sys = "0.2.0"
 hid-sys = "0.2.0"
