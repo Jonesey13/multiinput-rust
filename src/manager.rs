@@ -1,6 +1,7 @@
-use winapi::*;
-use user32::*;
-use kernel32::*;
+use winapi::um::winuser::*; 
+use winapi::shared::windef::*;
+use winapi::shared::minwindef::*; 
+use winapi::um::libloaderapi::*;
 use event::*;
 use devices::*;
 use rawinput::*;
@@ -206,13 +207,6 @@ fn print_raw_device_list (devices: &Devices) {;
     for joystick in devices.joysticks.clone() {
         println!("{:?}", joystick.names);
         println!("{:?}", joystick.serial);
-        println!("{:?}", joystick.caps);
-        for caps in joystick.value_caps {
-            println!("{:?}", caps);
-        }
-        for caps in joystick.button_caps {
-            println!("{:?}", caps);
-        }
     }
 }
 

@@ -1,9 +1,11 @@
- use winapi::*;
+use winapi::um::winuser::*;
+use winapi::shared::hidpi::*;
+use winapi::shared::hidusage::*;
+use winapi::shared::ntdef::*;
 use event::*;
 use devices::*;
 use std::mem::*;
 use std::mem;
-use hid::*;
 
 pub unsafe fn garbage_vec<T>(size: usize) -> Vec<T>{
     let mut v = Vec::with_capacity(size);
@@ -17,7 +19,7 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
     unsafe {
         let button_caps = hid_info.button_caps[0].clone();
         let number_of_buttons: ULONG =
-            (button_caps.Range().UsageMax - button_caps.Range().UsageMin + 1) as ULONG;
+            (button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1) as ULONG;
         let mut usage: Vec<USAGE> = garbage_vec(number_of_buttons as usize);
         let mut number_of_presses: ULONG = number_of_buttons;
 
@@ -35,7 +37,7 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
 
         let mut button_states: Vec<bool> = vec![false; number_of_buttons as usize];
 	for i in 0..number_of_presses as usize{
-            button_states[(usage[i] - button_caps.Range().UsageMin) as usize] = true;
+            button_states[(usage[i] - button_caps.u.Range().UsageMin) as usize] = true;
         }        
         let vec_value_caps = hid_info.value_caps.clone();
 
@@ -47,7 +49,7 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
         let mut value: ULONG = mem::uninitialized();
         let mut derived_value: f64;
         for value_caps in vec_value_caps {
-            let usage_index = value_caps.Range().UsageMin;
+            let usage_index = value_caps.u.Range().UsageMin;
 
             let mut logical_max = value_caps.LogicalMax;
             let mut logical_min = value_caps.LogicalMin;

@@ -1,5 +1,6 @@
-use winapi::*;
-use user32::*;
+use winapi::um::winuser::*;
+use winapi::shared::minwindef::UINT; 
+use winapi::shared::windef::HWND;
 use devices::*;
 use rawinput::*;
 use manager::*;

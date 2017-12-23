@@ -1,12 +1,15 @@
-use user32::*;
-use winapi::*;
-use kernel32::*;
+use winapi::um::winuser::*;
+use winapi::um::winnt::{PVOID, HANDLE, FILE_SHARE_READ, FILE_SHARE_WRITE}; 
+use winapi::shared::minwindef::{UINT, LPVOID, INT}; 
+use winapi::shared::hidsdi::*;
+use winapi::shared::hidpi::*;
+use winapi::um::fileapi::*;
+use winapi::um::handleapi::*;
 use devices::*;
 use event::*;
 use mouse::*;
 use keyboard::*;
 use joystick::*;
-use hid::*;
 use std::collections::VecDeque;
 use std::{mem,ptr};
 use std::ffi::OsString;
@@ -66,14 +69,14 @@ fn read_input_buffer(event_queue: &mut VecDeque<RawEvent>, devices: &mut Devices
             };
             match raw_input.header.dwType {
                 RIM_TYPEMOUSE => {
-                    event_queue.extend(process_mouse_data(&raw_input.mouse(), pos));
+                    event_queue.extend(process_mouse_data(&raw_input.data.mouse(), pos));
                 },
                 RIM_TYPEKEYBOARD => {
-                    event_queue.extend(process_keyboard_data(&raw_input.keyboard(), pos));
+                    event_queue.extend(process_keyboard_data(&raw_input.data.keyboard(), pos));
                 },
                 RIM_TYPEHID => {
                     event_queue.extend(process_joystick_data(
-                        &raw_input.hid(), pos, &mut devices.joysticks[pos]));
+                        &raw_input.data.hid(), pos, &mut devices.joysticks[pos]));
                 },
                 _ => (),
             }
@@ -242,10 +245,10 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
                              info: raw_info}
                 )),
         RIM_TYPEHID => {
-            if raw_info.hid().usUsagePage != 0x01
+            if raw_info.u.hid().usUsagePage != 0x01
                 || !(
-                    raw_info.hid().usUsage == 0x04
-                    || raw_info.hid().usUsage == 0x05 ) {
+                    raw_info.u.hid().usUsage == 0x04
+                    || raw_info.u.hid().usUsage == 0x05 ) {
                 return None;
             }
             let mut preparsed_data_size: UINT = 1024;

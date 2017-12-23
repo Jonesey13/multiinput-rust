@@ -1,4 +1,4 @@
-use winapi::*;
+use winapi::um::winuser::*;
 use event::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]

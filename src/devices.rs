@@ -1,7 +1,9 @@
-use winapi::*;
+use winapi::um::winuser::*;
+use winapi::shared::hidpi::*;
+use winapi::um::winnt::*;
 use std::collections::HashMap;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct MouseInfo {
     pub names: Vec<String>,
     pub handles: Vec<HANDLE>,
@@ -9,7 +11,7 @@ pub struct MouseInfo {
     pub info: RID_DEVICE_INFO,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct KeyboardInfo {
     pub names: Vec<String>,
     pub handles: Vec<HANDLE>,
@@ -17,7 +19,7 @@ pub struct KeyboardInfo {
     pub info: RID_DEVICE_INFO,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct JoystickInfo {
     pub names: Vec<String>,
     pub handles: Vec<HANDLE>,
@@ -138,7 +140,7 @@ impl JoystickState {
             let mut button_states: Vec<bool> = Vec::new();
             if p_button_caps.len() > 0 {
                 let ref button_caps = p_button_caps[0];
-                let number_of_buttons = button_caps.Range().UsageMax - button_caps.Range().UsageMin + 1;
+                let number_of_buttons = button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1;
                 for _ in 0..number_of_buttons{
                     button_states.push(false);
                 }
@@ -146,25 +148,25 @@ impl JoystickState {
             let mut axis_states = Axes::new();
             let mut hatswitch: Option<HatSwitch> = None;
             for value_caps in p_value_caps {
-                if value_caps.Range().UsageMin == 0x30 {
+                if value_caps.u.Range().UsageMin == 0x30 {
                     axis_states.x = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x31 {
+                if value_caps.u.Range().UsageMin == 0x31 {
                     axis_states.y = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x32 {
+                if value_caps.u.Range().UsageMin == 0x32 {
                     axis_states.z = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x33 {
+                if value_caps.u.Range().UsageMin == 0x33 {
                     axis_states.rx = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x34 {
+                if value_caps.u.Range().UsageMin == 0x34 {
                     axis_states.ry = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x35 {
+                if value_caps.u.Range().UsageMin == 0x35 {
                     axis_states.rz = Some(0f64);
                 }
-                if value_caps.Range().UsageMin == 0x39 {
+                if value_caps.u.Range().UsageMin == 0x39 {
                     hatswitch = Some(HatSwitch::Center);
                 }
             }
