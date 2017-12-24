@@ -1,6 +1,6 @@
-use winapi::um::winuser::*; 
-use event::*;
-use std::mem::*;
+use winapi::um::winuser::{RI_MOUSE_MIDDLE_BUTTON_DOWN, RI_MOUSE_RIGHT_BUTTON_DOWN, RI_MOUSE_MIDDLE_BUTTON_UP, RI_MOUSE_RIGHT_BUTTON_UP, RI_MOUSE_LEFT_BUTTON_DOWN, RAWMOUSE, RI_MOUSE_LEFT_BUTTON_UP, RI_MOUSE_WHEEL}; 
+use event::{MouseButton, State, RawEvent};
+use std::mem::transmute_copy;
 
 // #[repr(C)] #[derive(Clone, Copy, Debug)]
 // pub struct RAWMOUSEMOD {

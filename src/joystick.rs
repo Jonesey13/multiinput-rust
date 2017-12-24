@@ -1,10 +1,10 @@
-use winapi::um::winuser::*;
-use winapi::shared::hidpi::*;
-use winapi::shared::hidusage::*;
-use winapi::shared::ntdef::*;
-use event::*;
-use devices::*;
-use std::mem::*;
+use winapi::um::winuser::RAWHID;
+use winapi::shared::hidpi::{PHIDP_PREPARSED_DATA, HidP_Input, HidP_GetUsageValue, HIDP_STATUS_SUCCESS, HidP_GetUsages};
+use winapi::shared::hidusage::USAGE;
+use winapi::shared::ntdef::{PCHAR, ULONG, LONG};
+use event::RawEvent;
+use devices::{JoystickState, HatSwitch, JoystickInfo};
+use std::mem::transmute;
 use std::mem;
 
 pub unsafe fn garbage_vec<T>(size: usize) -> Vec<T>{

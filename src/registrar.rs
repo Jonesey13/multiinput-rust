@@ -1,9 +1,9 @@
-use winapi::um::winuser::*;
+use winapi::um::winuser::{RIDEV_INPUTSINK, RAWINPUTDEVICE, RegisterRawInputDevices};
 use winapi::shared::minwindef::UINT; 
 use winapi::shared::windef::HWND;
-use devices::*;
-use rawinput::*;
-use manager::*;
+use devices::Devices;
+use rawinput::produce_raw_device_list;
+use manager::{XInputInclude, DeviceType};
 
 use std::mem;
 

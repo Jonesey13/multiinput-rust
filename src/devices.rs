@@ -1,6 +1,6 @@
-use winapi::um::winuser::*;
-use winapi::shared::hidpi::*;
-use winapi::um::winnt::*;
+use winapi::um::winuser::RID_DEVICE_INFO;
+use winapi::shared::hidpi::{HIDP_VALUE_CAPS, HIDP_CAPS, HIDP_BUTTON_CAPS};
+use winapi::um::winnt::HANDLE;
 use std::collections::HashMap;
 
 #[derive(Clone)]

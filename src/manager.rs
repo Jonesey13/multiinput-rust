@@ -1,10 +1,10 @@
-use winapi::um::winuser::*; 
-use winapi::shared::windef::*;
-use winapi::shared::minwindef::*; 
-use winapi::um::libloaderapi::*;
-use event::*;
-use devices::*;
-use rawinput::*;
+use winapi::um::winuser::{CreateWindowExW, DefWindowProcW, WNDCLASSEXW, HWND_MESSAGE, CW_USEDEFAULT, RegisterClassExW}; 
+use winapi::shared::windef::HWND;
+use winapi::shared::minwindef::UINT; 
+use winapi::um::libloaderapi::GetModuleHandleW;
+use event::RawEvent;
+use devices::{Devices, JoystickState};
+use rawinput::{get_joystick_state, get_event};
 use registrar;
 
 use std::ptr;

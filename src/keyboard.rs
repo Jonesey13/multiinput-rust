@@ -1,5 +1,5 @@
 use winapi::um::winuser::*;
-use event::*;
+use event::{KeyId, RawEvent, State};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum KeyPos {

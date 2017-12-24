@@ -1,5 +1,4 @@
-use devices::*;
-
+use devices::{JoystickState, HatSwitch};
 
 /// State of a Key or Button
 #[derive(Eq, PartialEq, Clone, Debug)]
