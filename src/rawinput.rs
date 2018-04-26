@@ -189,7 +189,7 @@ pub unsafe fn raw_handle_to_name(device_handle: HANDLE) -> String {
                                           name_buffer.as_mut_ptr() as LPVOID,
                                           &mut name_buffer_size);
     if result_2 == -1i32 as UINT{
-        panic!("GetRawInputDeviceInfo Failed: Required Size: {:?}", name_buffer_size);
+        return "Cannot obtain device name, continuing...".to_string();
     }
     let name_slice = &name_buffer[0..result_2 as usize];
     match OsString::from_wide(name_slice).into_string(){
