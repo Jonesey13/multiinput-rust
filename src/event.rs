@@ -107,6 +107,7 @@ pub enum Axis {
     RX,
     RY,
     RZ,
+    SLIDER
 }
 
 
@@ -137,16 +138,6 @@ impl JoystickState {
                 index,
                 if press_state { State::Released } else { State::Pressed }));
         }
-        // for index in 0..self.button_states.len() {
-        //     if self.button_states[index] == true
-        //         && other_state.button_states[index] == false {
-        //         output.push(RawEvent::JoystickButtonEvent(id,index,State::Released));
-        //     }
-        //     if self.button_states[index] == false
-        //         && other_state.button_states[index] == true {
-        //         output.push(RawEvent::JoystickButtonEvent(id,index,State::Pressed));
-        //     }
-        // }
         if self.raw_axis_states.x != other_state.raw_axis_states.x {
             if let Some(value) = other_state.axis_states.x {
                 output.push(RawEvent::JoystickAxisEvent(id, Axis::X, value));
@@ -175,6 +166,11 @@ impl JoystickState {
         if self.raw_axis_states.rz != other_state.raw_axis_states.rz {
             if let Some(value) = other_state.axis_states.rz {
                 output.push(RawEvent::JoystickAxisEvent(id, Axis::RZ, value));
+            }
+        }
+        if self.raw_axis_states.slider != other_state.raw_axis_states.slider {
+            if let Some(value) = other_state.axis_states.slider {
+                output.push(RawEvent::JoystickAxisEvent(id, Axis::SLIDER, value));
             }
         }
         if let Some(value_other) = other_state.hatswitch {

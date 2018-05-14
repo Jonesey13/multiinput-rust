@@ -166,6 +166,9 @@ impl JoystickState {
                 if value_caps.u.Range().UsageMin == 0x35 {
                     axis_states.rz = Some(0f64);
                 }
+                if value_caps.u.Range().UsageMin == 0x36 {
+                    axis_states.slider = Some(0f64);
+                }
                 if value_caps.u.Range().UsageMin == 0x39 {
                     hatswitch = Some(HatSwitch::Center);
                 }
@@ -188,6 +191,7 @@ pub struct Axes {
     pub rx: Option<f64>,
     pub ry: Option<f64>,
     pub rz: Option<f64>,
+    pub slider: Option<f64>,
 }
 
 impl Axes {
@@ -199,6 +203,7 @@ impl Axes {
             rx: None,
             ry: None,
             rz: None,
+            slider: None,
         }
     }
 }
@@ -211,17 +216,19 @@ pub struct RawAxes {
     pub rx: u32,
     pub ry: u32,
     pub rz: u32,
+    pub slider: u32
 }
 
 impl RawAxes {
     pub fn new() -> RawAxes {
-        RawAxes{
+        RawAxes {
             x: 0u32,
             y: 0u32,
             z: 0u32,
             rx: 0u32,
             ry: 0u32,
             rz: 0u32,
+            slider: 0u32
         }
     }
 }
