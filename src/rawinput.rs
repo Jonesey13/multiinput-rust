@@ -271,23 +271,27 @@ pub unsafe fn get_device_info(handle: HANDLE, name: String, serial: Option<Strin
             let mut p_button_caps: Vec<HIDP_BUTTON_CAPS> =
                 garbage_vec(caps_length as usize);
 
-            assert!(
-                HidP_GetButtonCaps(HidP_Input,
-                                   p_button_caps.as_mut_ptr() as PHIDP_BUTTON_CAPS,
-                                   &mut caps_length,
-                                   preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
-                    == HIDP_STATUS_SUCCESS);
+            if caps_length != 0 { 
+                assert!(
+                    HidP_GetButtonCaps(HidP_Input,
+                                       p_button_caps.as_mut_ptr() as PHIDP_BUTTON_CAPS,
+                                       &mut caps_length,
+                                       preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
+                        == HIDP_STATUS_SUCCESS);
+            }
 
             caps_length = caps.NumberInputValueCaps;
             let mut p_value_caps: Vec<HIDP_VALUE_CAPS> =
                 garbage_vec(caps_length as usize);
 
-            assert!(
-                HidP_GetValueCaps(HidP_Input,
-                                  p_value_caps.as_mut_ptr() as PHIDP_VALUE_CAPS,
-                                  &mut caps_length,
-                                  preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
-                    == HIDP_STATUS_SUCCESS);
+            if caps_length != 0 { 
+                assert!(
+                    HidP_GetValueCaps(HidP_Input,
+                                      p_value_caps.as_mut_ptr() as PHIDP_VALUE_CAPS,
+                                      &mut caps_length,
+                                      preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA)
+                        == HIDP_STATUS_SUCCESS);
+            }
 
             let is_360_controller = name.find("IG_") != None;
 
