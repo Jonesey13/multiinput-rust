@@ -113,6 +113,10 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
                 axis_states.rz = Some(derived_value);
                 raw_axis_states.rz = value;
             }
+            if usage_index == 0x36 {
+                axis_states.slider = Some(derived_value);
+                raw_axis_states.slider = value;
+            }
             if usage_index == 0x39 {
                 hatswitch = match value as LONG - value_caps.LogicalMin {
                     0 => Some(HatSwitch::Up),
