@@ -1,5 +1,5 @@
 use winapi::um::winuser::RAWHID;
-use winapi::shared::hidpi::{PHIDP_PREPARSED_DATA, HidP_Input, HidP_GetUsageValue, HIDP_STATUS_SUCCESS, HidP_GetUsages};
+use winapi::shared::hidpi::{PHIDP_PREPARSED_DATA, HidP_Input, HidP_GetUsageValue, HIDP_STATUS_SUCCESS, HIDP_STATUS_INCOMPATIBLE_REPORT_ID, HidP_GetUsages};
 use winapi::shared::hidusage::USAGE;
 use winapi::shared::ntdef::{PCHAR, ULONG, LONG};
 use event::RawEvent;
@@ -23,17 +23,17 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
         let mut usage: Vec<USAGE> = garbage_vec(number_of_buttons as usize);
         let mut number_of_presses: ULONG = number_of_buttons;
 
-	assert!(
+	    assert!(
             HidP_GetUsages(HidP_Input,
-                           button_caps.UsagePage,
-                           0,
-                           usage.as_mut_ptr(),
-                           &mut number_of_presses,
-                           hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
-		           transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
-                           raw_data.dwSizeHid
-		           ) == HIDP_STATUS_SUCCESS
-                );
+                button_caps.UsagePage,
+                0,
+                usage.as_mut_ptr(),
+                &mut number_of_presses,
+                hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
+                transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
+                raw_data.dwSizeHid
+            ) == HIDP_STATUS_SUCCESS
+        );
 
         let mut button_states: Vec<bool> = vec![false; number_of_buttons as usize];
 	for i in 0..number_of_presses as usize{
@@ -60,18 +60,22 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
                 logical_max = 65535;
                 logical_min = 0;                
             }
+
+            let usage_value_result = HidP_GetUsageValue(
+                HidP_Input,
+                value_caps.UsagePage,
+                0,
+                usage_index,
+                &mut value,
+                hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
+                transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
+                raw_data.dwSizeHid,
+            );
             
-	    assert!(
-                HidP_GetUsageValue(
-                    HidP_Input,
-                    value_caps.UsagePage,
-                    0,
-                    usage_index,
-                    &mut value,
-                    hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
-		    transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
-                    raw_data.dwSizeHid,
-		    ) == HIDP_STATUS_SUCCESS
+            // If the usage does not match the usage page reported by the device we ignore the result
+            // (see https://github.com/Jonesey13/multiinput-rust/issues/3)
+	        assert!( 
+                (usage_value_result == HIDP_STATUS_SUCCESS) || (usage_value_result == HIDP_STATUS_INCOMPATIBLE_REPORT_ID)
             );
             
             if value as i32 > logical_max {
