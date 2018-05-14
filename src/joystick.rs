@@ -17,34 +17,36 @@ pub fn process_joystick_data(raw_data: &RAWHID, id: usize, hid_info: &mut Joysti
                              ) -> Vec<RawEvent> {
     let mut output: Vec<RawEvent> = Vec::new();
     unsafe {
-        let button_caps = hid_info.button_caps[0].clone();
-        let number_of_buttons: ULONG =
-            (button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1) as ULONG;
-        let mut usage: Vec<USAGE> = garbage_vec(number_of_buttons as usize);
-        let mut number_of_presses: ULONG = number_of_buttons;
+        let mut button_states: Vec<bool> = vec![];
+        if let Some(button_caps) = hid_info.button_caps.iter().nth(0) {
+            let number_of_buttons: ULONG =
+                (button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1) as ULONG;
+            let mut usage: Vec<USAGE> = garbage_vec(number_of_buttons as usize);
+            let mut number_of_presses: ULONG = number_of_buttons;
 
-	    assert!(
-            HidP_GetUsages(HidP_Input,
-                button_caps.UsagePage,
-                0,
-                usage.as_mut_ptr(),
-                &mut number_of_presses,
-                hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
-                transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
-                raw_data.dwSizeHid
-            ) == HIDP_STATUS_SUCCESS
-        );
+            assert!(
+                HidP_GetUsages(HidP_Input,
+                    button_caps.UsagePage,
+                    0,
+                    usage.as_mut_ptr(),
+                    &mut number_of_presses,
+                    hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
+                    transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
+                    raw_data.dwSizeHid
+                ) == HIDP_STATUS_SUCCESS
+            );
 
-        let mut button_states: Vec<bool> = vec![false; number_of_buttons as usize];
-	for i in 0..number_of_presses as usize{
-            button_states[(usage[i] - button_caps.u.Range().UsageMin) as usize] = true;
-        }        
+            button_states = vec![false; number_of_buttons as usize];
+            for i in 0..number_of_presses as usize {
+                button_states[(usage[i] - button_caps.u.Range().UsageMin) as usize] = true;
+            }
+        }
+
         let vec_value_caps = hid_info.value_caps.clone();
 
         let mut axis_states = hid_info.state.axis_states.clone();
         let mut raw_axis_states = hid_info.state.raw_axis_states.clone();
         let mut hatswitch: Option<HatSwitch> = None;
-
 
         let mut value: ULONG = mem::uninitialized();
         let mut derived_value: f64;
