@@ -6,6 +6,7 @@ use event::RawEvent;
 use devices::{Devices, JoystickState};
 use rawinput::{get_joystick_state, get_event};
 use registrar;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use std::ptr;
 use std::mem;
@@ -83,9 +84,9 @@ impl RawInputManager {
                 match  rx.recv().unwrap() {
                     Command::Register(thing) =>
                     {devices = registrar.register_devices(hwnd, thing).unwrap();
-                     tx2.send(None).unwrap();},
+                        tx2.send(None).unwrap();},
                     Command::GetEvent =>
-                    tx2.send(get_event(&mut event_queue, &mut devices)).unwrap(),
+                        tx2.send(get_event(&mut event_queue, &mut devices)).unwrap(),
                     Command::Finish => {exit = true;},
                     Command::GetJoystickState(id) =>
                         tx_joy.send(get_joystick_state(&devices, id)).unwrap(),
@@ -149,8 +150,14 @@ fn setup_message_window() -> HWND{
         if hinstance == ptr::null_mut(){
             panic!("Instance Generation Failed");
         }
+
+        let current_time = SystemTime::now();
+        let classname_str = format!("RawInput Hidden Window {:?}", current_time.duration_since(UNIX_EPOCH).unwrap());
+
+        println!("{}", classname_str);
+
         let classname =
-            OsStr::new("RawInput Hidden Window").encode_wide().chain(Some(0).into_iter())
+            OsStr::new(&classname_str).encode_wide().chain(Some(0).into_iter())
             .collect::<Vec<_>>();
 
         let wcex = WNDCLASSEXW{
@@ -169,7 +176,7 @@ fn setup_message_window() -> HWND{
         };
         let a = RegisterClassExW(&wcex);
         if a == 0{
-	    panic!("Registering WindowClass Failed!");
+	        panic!("Registering WindowClass Failed!");
         }
 
         hwnd = CreateWindowExW(0,

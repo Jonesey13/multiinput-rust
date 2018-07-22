@@ -1,6 +1,6 @@
 [[package]]
 name = "multiinput"
-version = "0.0.10"
+version = "0.0.13"
 dependencies = [
  "winapi 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
