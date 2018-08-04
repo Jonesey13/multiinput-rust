@@ -154,8 +154,6 @@ fn setup_message_window() -> HWND{
         let current_time = SystemTime::now();
         let classname_str = format!("RawInput Hidden Window {:?}", current_time.duration_since(UNIX_EPOCH).unwrap());
 
-        println!("{}", classname_str);
-
         let classname =
             OsStr::new(&classname_str).encode_wide().chain(Some(0).into_iter())
             .collect::<Vec<_>>();
