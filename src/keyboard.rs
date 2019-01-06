@@ -26,6 +26,9 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     else {
         key_pos = KeyPos::Right;
     }
+    if key == VK_TAB {
+        key_opt = Some(KeyId::Tab);
+    }
     if key == VK_SHIFT {
         key_opt = Some(KeyId::Shift);
     }
@@ -265,6 +268,42 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     }
     if key == VK_F12 {
         key_opt = Some(KeyId::F12);
+    }
+    if key == VK_NUMLOCK {
+        key_opt = Some(KeyId::Numlock);
+    }
+    if key == VK_OEM_PLUS {
+        key_opt = Some(KeyId::Plus);
+    }
+    if key == VK_OEM_MINUS {
+        key_opt = Some(KeyId::Minus);
+    }
+    if key == VK_OEM_COMMA {
+        key_opt = Some(KeyId::Comma);
+    }
+    if key == VK_OEM_PERIOD {
+        key_opt = Some(KeyId::FullStop);
+    }
+    if key == VK_OEM_1 {
+        key_opt = Some(KeyId::SemiColon);
+    }
+    if key == VK_OEM_2 {
+        key_opt = Some(KeyId::ForwardSlash);
+    }
+    if key == VK_OEM_3 {
+        key_opt = Some(KeyId::Apostrophe);
+    }
+    if key == VK_OEM_4 {
+        key_opt = Some(KeyId::LeftSquareBracket);
+    }
+    if key == VK_OEM_5 {
+        key_opt = Some(KeyId::BackSlash);
+    }
+    if key == VK_OEM_6 {
+        key_opt = Some(KeyId::RightSquareBracket);
+    }
+    if key == VK_OEM_7 {
+        key_opt = Some(KeyId::Hash);
     }
     if key == VK_OEM_8 {
         key_opt = Some(KeyId::BackTick);

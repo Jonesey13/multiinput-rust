@@ -7,7 +7,7 @@ pub enum State {
     Released,
 }
 
-/// Key Identifier
+/// Key Identifier (UK Keyboard Layout)
 #[derive(Eq, PartialEq, Hash, Clone, Debug)]
 pub enum KeyId {
     Escape,
@@ -86,7 +86,20 @@ pub enum KeyId {
     Separator,
     Decimal,
     Divide,
-    BackTick
+    BackTick,
+    BackSlash,
+    ForwardSlash,
+    Plus,
+    Minus,
+    FullStop,
+    Comma,
+    Tab,
+    Numlock,
+    LeftSquareBracket,
+    RightSquareBracket,
+    SemiColon,
+    Apostrophe,
+    Hash,
 }
 
 /// Mouse Buttons
