@@ -3,7 +3,8 @@ use event::RawEvent;
 use std::mem::{transmute, MaybeUninit};
 use winapi::shared::hidpi::{
     HidP_GetUsageValue, HidP_GetUsages, HidP_Input, HIDP_STATUS_INCOMPATIBLE_REPORT_ID,
-    HIDP_STATUS_SUCCESS, PHIDP_PREPARSED_DATA,
+    HIDP_STATUS_SUCCESS, HIDP_STATUS_INVALID_REPORT_LENGTH, HIDP_STATUS_INVALID_REPORT_TYPE, PHIDP_PREPARSED_DATA,
+    HIDP_STATUS_BUFFER_TOO_SMALL, HIDP_STATUS_INVALID_PREPARSED_DATA, HIDP_STATUS_USAGE_NOT_FOUND
 };
 use winapi::shared::hidusage::USAGE;
 use winapi::shared::ntdef::{LONG, PCHAR, ULONG};
@@ -29,7 +30,7 @@ pub fn process_joystick_data(
             let mut usage: Vec<USAGE> = garbage_vec(number_of_buttons as usize);
             let mut number_of_presses: ULONG = number_of_buttons;
 
-            assert!(
+            let status = 
                 HidP_GetUsages(
                     HidP_Input,
                     button_caps.UsagePage,
@@ -39,8 +40,14 @@ pub fn process_joystick_data(
                     hid_info.preparsed_data.as_mut_ptr() as PHIDP_PREPARSED_DATA,
                     transmute::<_, PCHAR>(raw_data.bRawData.as_ptr()),
                     raw_data.dwSizeHid
-                ) == HIDP_STATUS_SUCCESS
-            );
+                );
+
+            assert!(status != HIDP_STATUS_INVALID_REPORT_LENGTH, "Invalid Report Length!");
+            assert!(status != HIDP_STATUS_INVALID_REPORT_TYPE, "Invalid Report Type!");
+            assert!(status != HIDP_STATUS_BUFFER_TOO_SMALL, "Status Buffer Too Small!");
+            assert!(status != HIDP_STATUS_INCOMPATIBLE_REPORT_ID, "Incompatible Report ID!");
+            assert!(status != HIDP_STATUS_INVALID_PREPARSED_DATA, "Invalid Preparsed Data!");
+            assert!(status != HIDP_STATUS_USAGE_NOT_FOUND, "Usage Not Found!");
 
             button_states = vec![false; number_of_buttons as usize];
             for i in 0..number_of_presses as usize {

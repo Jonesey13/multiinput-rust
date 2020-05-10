@@ -7,6 +7,8 @@ fn main() {
     manager.register_devices(DeviceType::Keyboards);
     manager.register_devices(DeviceType::Mice);
     manager.print_device_list();
+    let devices = manager.get_device_list();
+    println!("{:?}", devices);
     'outer: loop {
         if let Some(event) = manager.get_event() {
             match event {

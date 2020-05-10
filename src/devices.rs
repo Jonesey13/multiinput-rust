@@ -1,28 +1,79 @@
 use std::collections::HashMap;
+use std::fmt;
 use winapi::shared::hidpi::{HIDP_BUTTON_CAPS, HIDP_CAPS, HIDP_VALUE_CAPS};
 use winapi::um::winnt::HANDLE;
 use winapi::um::winuser::RID_DEVICE_INFO;
 
 #[derive(Clone)]
 pub struct MouseInfo {
-    pub names: Vec<String>,
-    pub handles: Vec<HANDLE>,
+    pub name: String,
+    pub handle: HANDLE,
     pub serial: Option<String>,
     pub info: RID_DEVICE_INFO,
+}
+
+impl fmt::Debug for MouseInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Mouse Info")
+            .field("name", &self.name)
+            .field("handle", &self.handle)
+            .field("serial", &self.serial)
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct MouseDisplayInfo {
+    pub name: String,
+    pub serial: Option<String>,
+}
+
+impl From<MouseInfo> for MouseDisplayInfo {
+    fn from(mouse: MouseInfo) -> Self {
+        Self {
+            name: mouse.name,
+            serial: mouse.serial
+        }
+    }
 }
 
 #[derive(Clone)]
 pub struct KeyboardInfo {
-    pub names: Vec<String>,
-    pub handles: Vec<HANDLE>,
+    pub name: String,
+    pub handle: HANDLE,
     pub serial: Option<String>,
     pub info: RID_DEVICE_INFO,
 }
 
+impl fmt::Debug for KeyboardInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Keyboard Info")
+            .field("name", &self.name)
+            .field("handle", &self.handle)
+            .field("serial", &self.serial)
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct KeyboardDisplayInfo {
+    pub name: String,
+    pub serial: Option<String>,
+}
+
+impl From<KeyboardInfo> for KeyboardDisplayInfo {
+    fn from(keyboard: KeyboardInfo) -> Self {
+        Self {
+            name: keyboard.name,
+            serial: keyboard.serial
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct JoystickInfo {
-    pub names: Vec<String>,
-    pub handles: Vec<HANDLE>,
+    pub name: String,
+    pub handle: HANDLE,
     pub serial: Option<String>,
     pub info: RID_DEVICE_INFO,
     pub caps: HIDP_CAPS,
@@ -33,7 +84,33 @@ pub struct JoystickInfo {
     pub is_360_controller: bool,
 }
 
-#[derive(Clone)]
+impl fmt::Debug for JoystickInfo {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Joystick Info")
+            .field("name", &self.name)
+            .field("handle", &self.handle)
+            .field("serial", &self.serial)
+            .field("360 Controller?", &self.is_360_controller)
+            .finish()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct JoystickDisplayInfo {
+    pub name: String,
+    pub serial: Option<String>,
+}
+
+impl From<JoystickInfo> for JoystickDisplayInfo {
+    fn from(joystick: JoystickInfo) -> Self {
+        Self {
+            name: joystick.name,
+            serial: joystick.serial
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 pub enum DeviceInfo {
     Mouse(MouseInfo),
     Keyboard(KeyboardInfo),
@@ -58,81 +135,23 @@ impl Devices {
             device_map: HashMap::new(),
         }
     }
+}
 
-    pub fn unique(&mut self) {
-        let old_devices = self.clone();
-        let mut new_devices = Devices::new();
-        for mouse in old_devices.mice {
-            if !(mouse.names[0].find("RDP") == None) {
-                continue;
-            }
-            if !(mouse.names[0].find("Virtual") == None) {
-                continue;
-            }
-            let handles = mouse.handles.clone();
-            let serial_opt = mouse.serial.clone();
-            let mut pos_opt: Option<usize> = None;
-            if let Some(_) = serial_opt.clone() {
-                pos_opt = new_devices.mice.iter().position(|x| x.serial == serial_opt);
-            }
-            if let Some(pos) = pos_opt {
-                new_devices.mice[pos].names.extend(mouse.names.clone());
-                new_devices.mice[pos].handles.extend(handles.clone());
-                for handle in handles {
-                    new_devices.device_map.insert(handle, pos);
-                }
-            } else {
-                for handle in handles {
-                    new_devices
-                        .device_map
-                        .insert(handle, new_devices.mice.len());
-                }
-                new_devices.mice.push(mouse);
-            }
+/// Striped down version of devices fit for sharing across threads
+#[derive(Clone, Debug)]
+pub struct DevicesDisplayInfo {
+    pub mice: Vec<MouseDisplayInfo>,
+    pub keyboards: Vec<KeyboardDisplayInfo>,
+    pub joysticks: Vec<JoystickDisplayInfo>,
+}
+
+impl From<Devices> for DevicesDisplayInfo {
+    fn from(devices: Devices) -> Self {
+        Self {
+            mice: devices.mice.iter().cloned().map(|m| m.into()).collect(),
+            keyboards: devices.keyboards.iter().cloned().map(|m| m.into()).collect(),
+            joysticks: devices.joysticks.iter().cloned().map(|m| m.into()).collect()
         }
-        for keyboard in old_devices.keyboards {
-            if !(keyboard.names[0].find("RDP") == None) {
-                continue;
-            }
-            if !(keyboard.names[0].find("Virtual") == None) {
-                continue;
-            }
-            let handles = keyboard.handles.clone();
-            let serial_opt = keyboard.serial.clone();
-            let mut pos_opt: Option<usize> = None;
-            if let Some(_) = serial_opt.clone() {
-                pos_opt = new_devices
-                    .keyboards
-                    .iter()
-                    .position(|x| x.serial == serial_opt);
-            }
-            if let Some(pos) = pos_opt {
-                new_devices.keyboards[pos]
-                    .names
-                    .extend(keyboard.names.clone());
-                new_devices.keyboards[pos].handles.extend(handles.clone());
-                for handle in handles {
-                    new_devices.device_map.insert(handle, pos);
-                }
-            } else {
-                for handle in handles {
-                    new_devices
-                        .device_map
-                        .insert(handle, new_devices.keyboards.len());
-                }
-                new_devices.keyboards.push(keyboard);
-            }
-        }
-        for joystick in old_devices.joysticks {
-            let handles = joystick.handles.clone();
-            for handle in handles {
-                new_devices
-                    .device_map
-                    .insert(handle, new_devices.joysticks.len());
-            }
-            new_devices.joysticks.push(joystick);
-        }
-        *self = new_devices;
     }
 }
 

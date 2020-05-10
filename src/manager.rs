@@ -1,3 +1,4 @@
+use devices::DevicesDisplayInfo;
 use devices::{Devices, JoystickState};
 use event::RawEvent;
 use rawinput::{get_event, get_joystick_state};
@@ -26,6 +27,7 @@ enum Command {
     GetJoystickState(usize),
     Finish,
     PrintDeviceList,
+    GetDeviceList,
     GetDeviceStats,
 }
 
@@ -62,6 +64,7 @@ pub struct RawInputManager {
     sender: Sender<Command>,
     receiver: Receiver<Option<RawEvent>>,
     joystick_receiver: Receiver<Option<JoystickState>>,
+    device_info_receiver: Receiver<DevicesDisplayInfo>,
     device_stats_receiver: Receiver<DeviceStats>,
 }
 
@@ -70,6 +73,7 @@ impl RawInputManager {
         let (tx, rx) = channel();
         let (tx2, rx2) = channel();
         let (tx_joy, rx_joy) = channel();
+        let (tx_devices, rx_devices) = channel();
         let (tx_stats, rx_stats) = channel();
 
         let joiner = thread::spawn(move || {
@@ -94,6 +98,7 @@ impl RawInputManager {
                         tx_joy.send(get_joystick_state(&devices, id)).unwrap()
                     }
                     Command::PrintDeviceList => print_raw_device_list(&devices),
+                    Command::GetDeviceList => tx_devices.send(devices.clone().into()).unwrap(),
                     Command::GetDeviceStats => tx_stats.send(get_device_stats(&devices)).unwrap(),
                 };
             }
@@ -104,6 +109,7 @@ impl RawInputManager {
             receiver: rx2,
             joystick_receiver: rx_joy,
             device_stats_receiver: rx_stats,
+            device_info_receiver: rx_devices
         })
     }
 
@@ -135,6 +141,12 @@ impl RawInputManager {
         self.sender.send(Command::GetDeviceStats).unwrap();
         self.device_stats_receiver.recv().unwrap()
     }
+
+    /// Get Device list
+    pub fn get_device_list(&self) -> DevicesDisplayInfo {
+            self.sender.send(Command::GetDeviceList).unwrap();
+            self.device_info_receiver.recv().unwrap()
+    }
 }
 
 impl Drop for RawInputManager {
@@ -154,7 +166,7 @@ fn setup_message_window() -> HWND {
 
         let current_time = SystemTime::now();
         let classname_str = format!(
-            "RawInput Hidden Window {:?}",
+            "RawInput Hidden Window - {:?}",
             current_time.duration_since(UNIX_EPOCH).unwrap()
         );
 
@@ -206,19 +218,16 @@ fn setup_message_window() -> HWND {
 /// Prints a list of all available raw input devices
 fn print_raw_device_list(devices: &Devices) {
     println!("Mice:");
-    for mouse in devices.mice.clone() {
-        println!("{:?}", mouse.names);
-        println!("{:?}", mouse.serial);
+    for mouse in &devices.mice {
+        println!("{:?}", mouse);
     }
     println!("Keyboards:");
-    for keyboard in devices.keyboards.clone() {
-        println!("{:?}", keyboard.names);
-        println!("{:?}", keyboard.serial);
+    for keyboard in &devices.keyboards {
+        println!("{:?}", keyboard);
     }
     println!("Hids:");
-    for joystick in devices.joysticks.clone() {
-        println!("{:?}", joystick.names);
-        println!("{:?}", joystick.serial);
+    for joystick in &devices.joysticks {
+        println!("{:?}", joystick);
     }
 }
 

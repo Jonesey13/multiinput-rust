@@ -187,7 +187,6 @@ pub fn produce_raw_device_list(incl_360_devices: bool) -> Devices {
             }
         }
     }
-    device_list.unique();
     device_list
 }
 
@@ -251,14 +250,14 @@ pub unsafe fn get_device_info(
 
     return match raw_info.dwType {
         RIM_TYPEMOUSE => Some(DeviceInfo::Mouse(MouseInfo {
-            names: vec![name],
-            handles: vec![handle],
+            name: name,
+            handle: handle,
             serial: serial,
             info: raw_info,
         })),
         RIM_TYPEKEYBOARD => Some(DeviceInfo::Keyboard(KeyboardInfo {
-            names: vec![name],
-            handles: vec![handle],
+            name: name,
+            handle: handle,
             serial: serial,
             info: raw_info,
         })),
@@ -268,6 +267,7 @@ pub unsafe fn get_device_info(
             {
                 return None;
             }
+
             let mut preparsed_data_size: UINT = 1024;
             assert!(
                 GetRawInputDeviceInfoW(
@@ -326,8 +326,8 @@ pub unsafe fn get_device_info(
             let is_360_controller = name.find("IG_") != None;
 
             Some(DeviceInfo::Joystick(JoystickInfo {
-                names: vec![name],
-                handles: vec![handle],
+                name: name,
+                handle: handle,
                 serial: serial,
                 info: raw_info,
                 caps: caps,
