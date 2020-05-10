@@ -1,3 +1,4 @@
+use std::sync::mpsc::TryIter;
 use devices::DevicesDisplayInfo;
 use devices::{Devices, JoystickState};
 use event::RawEvent;
@@ -63,7 +64,7 @@ pub struct DeviceStats {
 pub struct RawInputManager {
     joiner: Option<JoinHandle<()>>,
     sender: Sender<Command>,
-    receiver: Receiver<Option<RawEvent>>,
+    receiver: Receiver<RawEvent>,
     joystick_receiver: Receiver<Option<JoystickState>>,
     device_info_receiver: Receiver<DevicesDisplayInfo>,
     device_stats_receiver: Receiver<DeviceStats>,
@@ -93,10 +94,11 @@ impl RawInputManager {
                     },
                     Ok(Command::Register(thing)) => {
                         devices = registrar.register_devices(hwnd, thing).unwrap();
-                        tx2.send(None).unwrap();
                     }
                     Ok(Command::GetEvent) => {
-                        tx2.send(get_event(&mut event_queue, &mut devices)).unwrap()
+                        if let Some(event) = get_event(&mut event_queue, &mut devices) {
+                            tx2.send(event).unwrap()
+                        }
                     }
                     Ok(Command::Finish) => {
                         exit = true;
@@ -123,16 +125,21 @@ impl RawInputManager {
     /// Allows Raw Input devices of type device_type to be received from the Input Manager
     pub fn register_devices(&mut self, device_type: DeviceType) {
         self.sender.send(Command::Register(device_type)).unwrap();
-        self.receiver.recv().unwrap();
     }
 
     /// Get Event from the Input Manager
     pub fn get_event(&mut self) -> Option<RawEvent> {
         self.sender.send(Command::GetEvent).unwrap();
         match self.receiver.try_recv() {
-            Ok(event) => event,
+            Ok(event) => Some(event),
             _ => None 
         }
+    }
+
+    /// Get All Events from the Input Manager
+    pub fn get_events(&mut self) -> TryIter<RawEvent> {
+        self.sender.send(Command::GetEvent).unwrap();
+        self.receiver.try_iter()
     }
 
     /// Get Joystick State from the Input Manager
