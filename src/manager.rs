@@ -1,6 +1,7 @@
 use devices::DevicesDisplayInfo;
 use devices::{Devices, JoystickState};
 use event::RawEvent;
+use std::sync::mpsc::TryRecvError;
 use rawinput::{get_event, get_joystick_state};
 use registrar;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -83,23 +84,29 @@ impl RawInputManager {
             let mut exit = false;
             let mut registrar = registrar::RawInputRegistrar::new();
             while !exit {
-                match rx.recv().unwrap() {
-                    Command::Register(thing) => {
+                match rx.try_recv() {
+                    Err(TryRecvError::Disconnected) => {
+                        panic!("Multinput Thread Unexpectedly Disconnected!")
+                    },
+                    Err(TryRecvError::Empty) => {
+                        std::thread::sleep(std::time::Duration::from_nanos(1));
+                    },
+                    Ok(Command::Register(thing)) => {
                         devices = registrar.register_devices(hwnd, thing).unwrap();
                         tx2.send(None).unwrap();
                     }
-                    Command::GetEvent => {
+                    Ok(Command::GetEvent) => {
                         tx2.send(get_event(&mut event_queue, &mut devices)).unwrap()
                     }
-                    Command::Finish => {
+                    Ok(Command::Finish) => {
                         exit = true;
                     }
-                    Command::GetJoystickState(id) => {
+                    Ok(Command::GetJoystickState(id)) => {
                         tx_joy.send(get_joystick_state(&devices, id)).unwrap()
                     }
-                    Command::PrintDeviceList => print_raw_device_list(&devices),
-                    Command::GetDeviceList => tx_devices.send(devices.clone().into()).unwrap(),
-                    Command::GetDeviceStats => tx_stats.send(get_device_stats(&devices)).unwrap(),
+                    Ok(Command::PrintDeviceList) => print_raw_device_list(&devices),
+                    Ok(Command::GetDeviceList) => tx_devices.send(devices.clone().into()).unwrap(),
+                    Ok(Command::GetDeviceStats) => tx_stats.send(get_device_stats(&devices)).unwrap(),
                 };
             }
         });
@@ -122,7 +129,10 @@ impl RawInputManager {
     /// Get Event from the Input Manager
     pub fn get_event(&mut self) -> Option<RawEvent> {
         self.sender.send(Command::GetEvent).unwrap();
-        self.receiver.recv().unwrap()
+        match self.receiver.try_recv() {
+            Ok(event) => event,
+            _ => None 
+        }
     }
 
     /// Get Joystick State from the Input Manager
