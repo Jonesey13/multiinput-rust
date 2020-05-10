@@ -1,7 +1,7 @@
-use winapi::um::winuser::RID_DEVICE_INFO;
-use winapi::shared::hidpi::{HIDP_VALUE_CAPS, HIDP_CAPS, HIDP_BUTTON_CAPS};
-use winapi::um::winnt::HANDLE;
 use std::collections::HashMap;
+use winapi::shared::hidpi::{HIDP_BUTTON_CAPS, HIDP_CAPS, HIDP_VALUE_CAPS};
+use winapi::um::winnt::HANDLE;
+use winapi::um::winuser::RID_DEVICE_INFO;
 
 #[derive(Clone)]
 pub struct MouseInfo {
@@ -30,7 +30,7 @@ pub struct JoystickInfo {
     pub value_caps: Vec<HIDP_VALUE_CAPS>,
     pub preparsed_data: Vec<u8>,
     pub state: JoystickState,
-    pub is_360_controller: bool
+    pub is_360_controller: bool,
 }
 
 #[derive(Clone)]
@@ -42,19 +42,20 @@ pub enum DeviceInfo {
 
 /// Stores Names to All Raw Input Devices
 #[derive(Clone)]
-pub struct Devices{
+pub struct Devices {
     pub mice: Vec<MouseInfo>,
     pub keyboards: Vec<KeyboardInfo>,
     pub joysticks: Vec<JoystickInfo>,
     pub device_map: HashMap<HANDLE, usize>,
 }
 
-impl Devices{
+impl Devices {
     pub fn new() -> Devices {
-        Devices{ mice: Vec::new(),
-                 keyboards: Vec::new(),
-                 joysticks: Vec::new(),
-                 device_map: HashMap::new(),
+        Devices {
+            mice: Vec::new(),
+            keyboards: Vec::new(),
+            joysticks: Vec::new(),
+            device_map: HashMap::new(),
         }
     }
 
@@ -78,12 +79,13 @@ impl Devices{
                 new_devices.mice[pos].names.extend(mouse.names.clone());
                 new_devices.mice[pos].handles.extend(handles.clone());
                 for handle in handles {
-                    new_devices.device_map.insert(handle,pos);
+                    new_devices.device_map.insert(handle, pos);
                 }
-            }
-            else {
+            } else {
                 for handle in handles {
-                    new_devices.device_map.insert(handle, new_devices.mice.len());
+                    new_devices
+                        .device_map
+                        .insert(handle, new_devices.mice.len());
                 }
                 new_devices.mice.push(mouse);
             }
@@ -99,18 +101,24 @@ impl Devices{
             let serial_opt = keyboard.serial.clone();
             let mut pos_opt: Option<usize> = None;
             if let Some(_) = serial_opt.clone() {
-                pos_opt = new_devices.keyboards.iter().position(|x| x.serial == serial_opt);
+                pos_opt = new_devices
+                    .keyboards
+                    .iter()
+                    .position(|x| x.serial == serial_opt);
             }
             if let Some(pos) = pos_opt {
-                new_devices.keyboards[pos].names.extend(keyboard.names.clone());
+                new_devices.keyboards[pos]
+                    .names
+                    .extend(keyboard.names.clone());
                 new_devices.keyboards[pos].handles.extend(handles.clone());
                 for handle in handles {
-                    new_devices.device_map.insert(handle,pos);
+                    new_devices.device_map.insert(handle, pos);
                 }
-            }
-            else {
+            } else {
                 for handle in handles {
-                    new_devices.device_map.insert(handle, new_devices.keyboards.len());
+                    new_devices
+                        .device_map
+                        .insert(handle, new_devices.keyboards.len());
                 }
                 new_devices.keyboards.push(keyboard);
             }
@@ -118,7 +126,9 @@ impl Devices{
         for joystick in old_devices.joysticks {
             let handles = joystick.handles.clone();
             for handle in handles {
-                new_devices.device_map.insert(handle, new_devices.joysticks.len());
+                new_devices
+                    .device_map
+                    .insert(handle, new_devices.joysticks.len());
             }
             new_devices.joysticks.push(joystick);
         }
@@ -126,7 +136,7 @@ impl Devices{
     }
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 pub struct JoystickState {
     pub button_states: Vec<bool>,
     pub axis_states: Axes,
@@ -135,13 +145,17 @@ pub struct JoystickState {
 }
 
 impl JoystickState {
-    pub fn new (p_button_caps: Vec<HIDP_BUTTON_CAPS>, p_value_caps: Vec<HIDP_VALUE_CAPS>) -> JoystickState {
-        unsafe{
+    pub fn new(
+        p_button_caps: Vec<HIDP_BUTTON_CAPS>,
+        p_value_caps: Vec<HIDP_VALUE_CAPS>,
+    ) -> JoystickState {
+        unsafe {
             let mut button_states: Vec<bool> = Vec::new();
             if p_button_caps.len() > 0 {
                 let ref button_caps = p_button_caps[0];
-                let number_of_buttons = button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1;
-                for _ in 0..number_of_buttons{
+                let number_of_buttons =
+                    button_caps.u.Range().UsageMax - button_caps.u.Range().UsageMin + 1;
+                for _ in 0..number_of_buttons {
                     button_states.push(false);
                 }
             }
@@ -173,7 +187,7 @@ impl JoystickState {
                     hatswitch = Some(HatSwitch::Center);
                 }
             }
-            JoystickState{
+            JoystickState {
                 button_states: button_states,
                 axis_states: axis_states,
                 hatswitch: hatswitch,
@@ -196,7 +210,7 @@ pub struct Axes {
 
 impl Axes {
     pub fn new() -> Axes {
-        Axes{
+        Axes {
             x: None,
             y: None,
             z: None,
@@ -216,7 +230,7 @@ pub struct RawAxes {
     pub rx: u32,
     pub ry: u32,
     pub rz: u32,
-    pub slider: u32
+    pub slider: u32,
 }
 
 impl RawAxes {
@@ -228,7 +242,7 @@ impl RawAxes {
             rx: 0u32,
             ry: 0u32,
             rz: 0u32,
-            slider: 0u32
+            slider: 0u32,
         }
     }
 }

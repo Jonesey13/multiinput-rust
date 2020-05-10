@@ -29,15 +29,15 @@ fn main() {
 
 extern crate winapi;
 
-mod mouse;
+pub mod devices;
 pub mod event;
 mod joystick;
-mod rawinput;
 mod keyboard;
-pub mod devices;
 pub mod manager;
+mod mouse;
+mod rawinput;
 mod registrar;
 
+pub use devices::*;
 pub use event::*;
 pub use manager::*;
-pub use devices::*;

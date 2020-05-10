@@ -1,5 +1,5 @@
-use winapi::um::winuser::*;
 use event::{KeyId, RawEvent, State};
+use winapi::um::winuser::*;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum KeyPos {
@@ -16,14 +16,12 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
     let key_pos: KeyPos;
     if flags & RI_KEY_BREAK != 0 {
         key_state = State::Released;
-    }
-    else {
+    } else {
         key_state = State::Pressed;
     }
     if flags & RI_KEY_E0 == 0 {
         key_pos = KeyPos::Left;
-    }
-    else {
+    } else {
         key_pos = KeyPos::Right;
     }
     if key == VK_TAB {
@@ -311,6 +309,6 @@ pub fn process_keyboard_data(raw_data: &RAWKEYBOARD, id: usize) -> Vec<RawEvent>
 
     if let Some(key_id) = key_opt {
         output.push(RawEvent::KeyboardEvent(id, key_id, key_state));
-        }
+    }
     output
 }

@@ -1,4 +1,4 @@
-use devices::{JoystickState, HatSwitch};
+use devices::{HatSwitch, JoystickState};
 
 /// State of a Key or Button
 #[derive(Eq, PartialEq, Clone, Debug)]
@@ -120,9 +120,8 @@ pub enum Axis {
     RX,
     RY,
     RZ,
-    SLIDER
+    SLIDER,
 }
-
 
 /// Event types
 ///
@@ -130,26 +129,34 @@ pub enum Axis {
 /// Keyboard press events repeat when a key is held down.
 #[derive(Clone, Debug)]
 pub enum RawEvent {
-    MouseButtonEvent(usize,MouseButton,State),
-    MouseMoveEvent(usize,i32,i32),
-    MouseWheelEvent(usize,f32),
-    KeyboardEvent(usize,KeyId,State),
-    JoystickButtonEvent(usize,usize,State),
-    JoystickAxisEvent(usize,Axis,f64),
-    JoystickHatSwitchEvent(usize,HatSwitch),
+    MouseButtonEvent(usize, MouseButton, State),
+    MouseMoveEvent(usize, i32, i32),
+    MouseWheelEvent(usize, f32),
+    KeyboardEvent(usize, KeyId, State),
+    JoystickButtonEvent(usize, usize, State),
+    JoystickAxisEvent(usize, Axis, f64),
+    JoystickHatSwitchEvent(usize, HatSwitch),
 }
-
 
 impl JoystickState {
     pub fn compare_states(&self, other_state: JoystickState, id: usize) -> Vec<RawEvent> {
         let mut output: Vec<RawEvent> = Vec::new();
-        for (index, (&press_state, _)) in self.button_states.iter()
-            .zip(other_state.button_states.iter()).enumerate()
-            .filter(|&(_, (&a, &b))| a != b) {
+        for (index, (&press_state, _)) in self
+            .button_states
+            .iter()
+            .zip(other_state.button_states.iter())
+            .enumerate()
+            .filter(|&(_, (&a, &b))| a != b)
+        {
             output.push(RawEvent::JoystickButtonEvent(
                 id,
                 index,
-                if press_state { State::Released } else { State::Pressed }));
+                if press_state {
+                    State::Released
+                } else {
+                    State::Pressed
+                },
+            ));
         }
         if self.raw_axis_states.x != other_state.raw_axis_states.x {
             if let Some(value) = other_state.axis_states.x {
@@ -189,7 +196,7 @@ impl JoystickState {
         if let Some(value_other) = other_state.hatswitch {
             if let Some(value_self) = self.hatswitch.clone() {
                 if value_self != value_other {
-                    output.push(RawEvent::JoystickHatSwitchEvent(id,value_other));
+                    output.push(RawEvent::JoystickHatSwitchEvent(id, value_other));
                 }
             }
         }
