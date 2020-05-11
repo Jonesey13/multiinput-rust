@@ -20,11 +20,15 @@ use std::os::windows::ffi::OsStrExt;
 use std::ptr;
 use std::thread;
 use std::thread::JoinHandle;
+use std::collections::HashSet;
+use std::iter::FromIterator;
 
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 enum Command {
     Register(DeviceType),
+    FilterDevices(Vec<String>),
+    UnfilterDevices,
     GetEvent,
     GetJoystickState(usize),
     Finish,
@@ -34,7 +38,7 @@ enum Command {
 }
 
 /// Types of Raw Input Device
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Hash)]
 pub enum DeviceType {
     Mice,
     Keyboards,
@@ -47,7 +51,7 @@ pub enum DeviceType {
 /// rumble or the central X button)
 /// Please see https://en.wikipedia.org/wiki/DirectInput#Xbox_360_Controller_support
 /// for more details
-#[derive(PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone, Hash)]
 pub enum XInputInclude {
     True,
     False,
@@ -88,12 +92,18 @@ impl RawInputManager {
                 match rx.try_recv() {
                     Err(TryRecvError::Disconnected) => {
                         panic!("Multinput Thread Unexpectedly Disconnected!")
-                    },
+                    }
                     Err(TryRecvError::Empty) => {
                         std::thread::sleep(std::time::Duration::from_nanos(1));
-                    },
+                    }
                     Ok(Command::Register(thing)) => {
                         devices = registrar.register_devices(hwnd, thing).unwrap();
+                    }
+                    Ok(Command::FilterDevices(strings)) => {
+                        devices.filter_device_map(HashSet::from_iter(strings.into_iter()));
+                    }
+                    Ok(Command::UnfilterDevices) => {
+                        devices.reset_device_map();
                     }
                     Ok(Command::GetEvent) => {
                         if let Some(event) = get_event(&mut event_queue, &mut devices) {
@@ -125,6 +135,17 @@ impl RawInputManager {
     /// Allows Raw Input devices of type device_type to be received from the Input Manager
     pub fn register_devices(&mut self, device_type: DeviceType) {
         self.sender.send(Command::Register(device_type)).unwrap();
+    }
+
+    /// Filters events returned to the list of names provided by the device_names list
+    /// Warning: you still need to register the corresponding device types beforehand for this to work!
+    pub fn filter_devices(&mut self, device_names: Vec<String>) {
+        self.sender.send(Command::FilterDevices(device_names)).unwrap();
+    }
+
+    /// Undoes the application of filter_devices()
+    pub fn unfilter_devices(&mut self) {
+        self.sender.send(Command::UnfilterDevices).unwrap();
     }
 
     /// Get Event from the Input Manager

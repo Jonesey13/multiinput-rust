@@ -52,7 +52,7 @@ fn read_input_buffer(event_queue: &mut VecDeque<RawEvent>, devices: &mut Devices
             mem::size_of::<RAWINPUTHEADER>() as UINT,
         ) as INT;
 
-        if numberofelements as INT == -1 {
+        if numberofelements == -1 {
             panic!("GetRawInputBuffer Gave Error on First Call!");
         }
         buffer_size = 1024;
@@ -62,7 +62,7 @@ fn read_input_buffer(event_queue: &mut VecDeque<RawEvent>, devices: &mut Devices
             mem::size_of::<RAWINPUTHEADER>() as UINT,
         ) as INT;
 
-        if numberofelements as INT == -1 {
+        if numberofelements == -1 {
             panic!("GetRawInputBuffer Gave Error on Second Call!");
         }
 
@@ -129,7 +129,7 @@ pub fn produce_raw_device_list(incl_360_devices: bool) -> Devices {
             device_list_size as UINT,
         );
         if result == -1i32 as UINT {
-            panic!("Failed to Get Raw Device List Again!");
+            panic!("Failed to Get Raw Device List!");
         }
 
         for pos in 0..result as usize {
@@ -187,6 +187,7 @@ pub fn produce_raw_device_list(incl_360_devices: bool) -> Devices {
             }
         }
     }
+    device_list.original_device_map = device_list.device_map.clone();
     device_list
 }
 

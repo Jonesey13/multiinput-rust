@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::collections::HashMap;
 use std::fmt;
 use winapi::shared::hidpi::{HIDP_BUTTON_CAPS, HIDP_CAPS, HIDP_VALUE_CAPS};
@@ -124,6 +125,7 @@ pub struct Devices {
     pub keyboards: Vec<KeyboardInfo>,
     pub joysticks: Vec<JoystickInfo>,
     pub device_map: HashMap<HANDLE, usize>,
+    pub original_device_map: HashMap<HANDLE, usize>,
 }
 
 impl Devices {
@@ -133,7 +135,34 @@ impl Devices {
             keyboards: Vec::new(),
             joysticks: Vec::new(),
             device_map: HashMap::new(),
+            original_device_map: HashMap::new(),
         }
+    }
+}
+
+impl Devices {
+    pub fn filter_device_map(&mut self, device_filter: HashSet<String>) {
+        self.device_map = HashMap::new();
+
+        for (pos, mouse) in self.mice.iter().enumerate() {
+            if device_filter.contains(&mouse.name) {
+                self.device_map.insert(mouse.handle, pos);
+            }
+        }
+        for (pos, keyboard) in self.keyboards.iter().enumerate() {
+            if device_filter.contains(&keyboard.name) {
+                self.device_map.insert(keyboard.handle, pos);
+            }
+        }
+        for (pos, joystick) in self.joysticks.iter().enumerate() {
+            if device_filter.contains(&joystick.name) {
+                self.device_map.insert(joystick.handle, pos);
+            }
+        }
+    }
+
+    pub fn reset_device_map(&mut self) {
+        self.device_map = self.original_device_map.clone();
     }
 }
 
