@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"enum":[["DeviceInfo",""],["HatSwitch",""]],"struct":[["Axes",""],["Devices","Stores Names to All Raw Input Devices"],["DevicesDisplayInfo","Striped down version of devices fit for sharing across threads"],["JoystickDisplayInfo",""],["JoystickInfo",""],["JoystickState",""],["KeyboardDisplayInfo",""],["KeyboardInfo",""],["MouseDisplayInfo",""],["MouseInfo",""],["RawAxes",""]]});

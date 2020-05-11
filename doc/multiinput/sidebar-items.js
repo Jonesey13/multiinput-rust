@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["event",""],["manager",""]]});
+initSidebarItems({"mod":[["devices",""],["event",""],["manager",""]]});
